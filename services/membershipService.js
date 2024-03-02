@@ -3,34 +3,36 @@ class MembershipService {
         this.Membership = db.Membership;
     }
 
-    async getAllMemberships() {
+    async getAll() {
         return this.Membership.findAll();
     }
 
-    async createMembership(membershipDetails) {
-        return this.Membership.create(membershipDetails);
-    }
-
-    async updateMembership(membershipId, newMembershipDetails) {
-        const existingMembership = await this.Membership.findByPk(membershipId);
-
-        if (!existingMembership) {
-            throw new Error("Membership not found");
-        }
-
-        await existingMembership.update(newMembershipDetails);
-        return this.getMembershipById(membershipId);
-    }
-
-    async getMembershipById(membershipId) {
+    async getById(membershipId) {
         return this.Membership.findByPk(membershipId);
     }
 
-    async deleteMembership(membershipId) {
-        const deletedRowCount = await this.Membership.destroy({ where: { id: membershipId } });
-        if (deletedRowCount === 0) {
+    async create(name, discount) {
+        return this.Membership.create({ name, discount });
+    }
+
+    async update(membershipId, name, discount) {
+        const [updatedRowsCount] = await this.Membership.update({ name, discount }, { where: { id: membershipId } });
+
+        if (updatedRowsCount === 0) {
+            throw new Error("Membership not found or not updated");
+        }
+
+        return this.getById(membershipId);
+    }
+
+    async delete(membershipId) {
+        const membership = await this.getById(membershipId);
+
+        if (!membership) {
             throw new Error("Membership not found");
         }
+
+        await membership.destroy();
     }
 }
 

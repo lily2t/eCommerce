@@ -3,34 +3,36 @@ class CartService {
         this.Cart = db.Cart;
     }
 
-    async getAllCarts() {
-        return this.Cart.findAll();
+    async getByUserId(userId) {
+        return this.Cart.findAll({ where: { userId } });
     }
 
-    async createCart(cartDetails) {
-        return this.Cart.create(cartDetails);
+    async addToCart(userId, productId, quantity) {
+        return this.Cart.create({ userId, productId, quantity });
     }
 
-    async updateCart(cartId, newCartDetails) {
-        const existingCart = await this.Cart.findByPk(cartId);
+    async updateCartItem(cartItemId, quantity) {
+        const [updatedRowsCount] = await this.Cart.update({ quantity }, { where: { id: cartItemId } });
 
-        if (!existingCart) {
-            throw new Error("Cart not found");
+        if (updatedRowsCount === 0) {
+            throw new Error("Cart item not found or not updated");
         }
 
-        await existingCart.update(newCartDetails);
-        return this.getCartById(cartId);
+        return this.getCartItemById(cartItemId);
     }
 
-    async getCartById(cartId) {
-        return this.Cart.findByPk(cartId);
-    }
+    async removeFromCart(cartItemId) {
+        const cartItem = await this.getCartItemById(cartItemId);
 
-    async deleteCart(cartId) {
-        const deletedRowCount = await this.Cart.destroy({ where: { id: cartId } });
-        if (deletedRowCount === 0) {
-            throw new Error("Cart not found");
+        if (!cartItem) {
+            throw new Error("Cart item not found");
         }
+
+        await cartItem.destroy();
+    }
+
+    async getCartItemById(cartItemId) {
+        return this.Cart.findByPk(cartItemId);
     }
 }
 

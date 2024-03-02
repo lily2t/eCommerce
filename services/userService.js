@@ -1,36 +1,31 @@
+const crypto = require('crypto');
+
 class UserService {
     constructor(db) {
         this.User = db.User;
     }
 
-    async getAllUsers() {
-        return this.User.findAll();
+    async getByEmail(email) {
+        return this.User.findOne({ where: { email } });
     }
 
-    async createUser(userDetails) {
-        return this.User.create(userDetails);
-    }
-
-    async updateUser(userId, newUserDetails) {
-        const existingUser = await this.User.findByPk(userId);
-
-        if (!existingUser) {
-            throw new Error("User not found");
-        }
-
-        await existingUser.update(newUserDetails);
-        return this.getUserById(userId);
-    }
-
-    async getUserById(userId) {
+    async getById(userId) {
         return this.User.findByPk(userId);
     }
 
-    async deleteUser(userId) {
-        const deletedRowCount = await this.User.destroy({ where: { id: userId } });
-        if (deletedRowCount === 0) {
+    async create(firstName, lastName, email, password, address, telephoneNumber) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return this.User.create({ firstName, lastName, email, password: hashedPassword, address, telephoneNumber });
+    }
+
+    async updateRole(userId, roleId) {
+        const user = await this.getById(userId);
+        if (!user) {
             throw new Error("User not found");
         }
+        user.roleId = roleId;
+        await user.save();
+        return user;
     }
 }
 

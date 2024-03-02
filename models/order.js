@@ -4,7 +4,6 @@ module.exports = (sequelize, Sequelize) => {
 		{
 			order_number: {
 				type: Sequelize.DataTypes.STRING,
-				unique: true,
 				allowNull: false,
 			},
 			status: {
@@ -15,6 +14,10 @@ module.exports = (sequelize, Sequelize) => {
 				type: Sequelize.DataTypes.FLOAT,
 				allowNull: false,
 			},
+			membership_discount: {
+				type: Sequelize.DataTypes.INTEGER,
+				allowNull: false,
+			},
 		},
 		{
 			timestamps: true,
@@ -23,7 +26,7 @@ module.exports = (sequelize, Sequelize) => {
 
 	Order.associate = function (models) {
 		Order.belongsTo(models.User);
-		Order.belongsTo(models.Membership);
+		Order.hasMany(models.Order);
 	};
 
 	return Order;

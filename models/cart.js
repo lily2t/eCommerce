@@ -6,10 +6,6 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.DataTypes.INTEGER,
                 allowNull: false,
             },
-            unit_price: {
-                type: Sequelize.DataTypes.FLOAT,
-                allowNull: false,
-            },
         },
         {
             timestamps: true,

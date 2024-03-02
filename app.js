@@ -1,12 +1,21 @@
-require('dotenv').config();
+require('dotenv').config()
+var jwt = require('jsonwebtoken')
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var authRouter = require('./routes/auth');
+var productRouter = require('./routes/product');
+var categoryRouter = require('./routes/category');
+var brandRouter = require('./routes/brand');
+var cartRouter = require('./routes/cart');
+var membershipRouter = require('./routes/membership');
+var utilityRouter = require('./routes/utility');
+
+var db = require('./models');
+db.sequelize.sync({ force: true });
 
 var app = express();
 
@@ -20,8 +29,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authRouter);
+app.use('/products', productRouter);
+app.use('/categories', categoryRouter);
+app.use('/brands', brandRouter);
+app.use('/membership', membershipRouter);
+app.use('/cart', cartRouter);
+app.use('/init', utilityRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

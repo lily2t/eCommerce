@@ -8,14 +8,16 @@ module.exports = (sequelize, Sequelize) => {
             },
             description: {
                 type: Sequelize.DataTypes.TEXT,
+                allowNull: false,
             },
             unitprice: {
                 type: Sequelize.DataTypes.FLOAT,
                 allowNull: false,
             },
             discount: {
-                type: Sequelize.DataTypes.FLOAT,
+                type: Sequelize.DataTypes.INTEGER,
                 allowNull: false,
+                defaultValue: 0,
             },
             date_added: {
                 type: Sequelize.DataTypes.DATE,
@@ -23,6 +25,7 @@ module.exports = (sequelize, Sequelize) => {
             },
             imgurl: {
                 type: Sequelize.DataTypes.STRING,
+                allowNull: false,
             },
             quantity: {
                 type: Sequelize.DataTypes.INTEGER,
@@ -30,8 +33,8 @@ module.exports = (sequelize, Sequelize) => {
             },
             isdeleted: {
                 type: Sequelize.DataTypes.BOOLEAN,
-                defaultValue: false,
                 allowNull: false,
+                defaultValue: false,
             },
         },
         {
@@ -40,10 +43,10 @@ module.exports = (sequelize, Sequelize) => {
     );
 
     Product.associate = function (models) {
-        Product.belongsTo(models.Brand, { foreignKey: 'brand_id' });
-        Product.belongsTo(models.Category, { foreignKey: 'category_id' });
-        Product.hasMany(models.CartItem);
-        Product.hasMany(models.OrderItem);
+        Product.belongsTo(models.Brand);
+        Product.belongsTo(models.Category);
+        Product.hasMany(models.Cart);
+        Product.hasMany(models.Order);
     };
 
     return Product;

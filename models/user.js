@@ -2,33 +2,38 @@ module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define(
         'User',
         {
-            firstname: {
-                type: Sequelize.DataTypes.STRING,
-                allowNull: false,
-            },
-            lastname: {
-                type: Sequelize.DataTypes.STRING,
-                allowNull: false,
-            },
             username: {
                 type: Sequelize.DataTypes.STRING,
-                unique: true,
                 allowNull: false,
+                unique: true,
             },
             email: {
                 type: Sequelize.DataTypes.STRING,
-                unique: true,
                 allowNull: false,
+                unique: true,
+                validate: {
+                    isEmail: true,
+                },
             },
             password: {
                 type: Sequelize.DataTypes.STRING,
                 allowNull: false,
             },
+            firstName: {
+                type: Sequelize.DataTypes.STRING,
+                allowNull: false,
+            },
+            lastName: {
+                type: Sequelize.DataTypes.STRING,
+                allowNull: false,
+            },
             address: {
                 type: Sequelize.DataTypes.STRING,
+                allowNull: false,
             },
-            telephonenumber: {
+            telephoneNumber: {
                 type: Sequelize.DataTypes.STRING,
+                allowNull: false,
             },
         },
         {
@@ -37,7 +42,7 @@ module.exports = (sequelize, Sequelize) => {
     );
 
     User.associate = function (models) {
-        User.belongsTo(models.Role, { foreignKey: 'role_id' });
+        User.belongsTo(models.Role);
         User.hasMany(models.Cart);
         User.hasMany(models.Order);
     };

@@ -3,34 +3,30 @@ class OrderService {
         this.Order = db.Order;
     }
 
-    async getAllOrders() {
+    async getByUserId(userId) {
+        return this.Order.findAll({ where: { userId } });
+    }
+
+    async getAll() {
         return this.Order.findAll();
     }
 
-    async createOrder(orderDetails) {
-        return this.Order.create(orderDetails);
+    async create(userId, status, totalAmount) {
+        return this.Order.create({ userId, status, totalAmount });
     }
 
-    async updateOrder(orderId, newOrderDetails) {
-        const existingOrder = await this.Order.findByPk(orderId);
+    async update(orderId, status) {
+        const [updatedRowsCount] = await this.Order.update({ status }, { where: { id: orderId } });
 
-        if (!existingOrder) {
-            throw new Error("Order not found");
+        if (updatedRowsCount === 0) {
+            throw new Error("Order not found or not updated");
         }
 
-        await existingOrder.update(newOrderDetails);
         return this.getOrderById(orderId);
     }
 
     async getOrderById(orderId) {
         return this.Order.findByPk(orderId);
-    }
-
-    async deleteOrder(orderId) {
-        const deletedRowCount = await this.Order.destroy({ where: { id: orderId } });
-        if (deletedRowCount === 0) {
-            throw new Error("Order not found");
-        }
     }
 }
 

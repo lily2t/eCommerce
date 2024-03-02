@@ -7,30 +7,35 @@ class ProductService {
         return this.Product.findAll();
     }
 
-    async createProduct(productDetails) {
-        return this.Product.create(productDetails);
-    }
-
-    async updateProduct(productId, newProductDetails) {
-        const existingProduct = await this.Product.findByPk(productId);
-
-        if (!existingProduct) {
-            throw new Error("Product not found");
-        }
-
-        await existingProduct.update(newProductDetails);
-        return this.getProductById(productId);
-    }
-
     async getProductById(productId) {
         return this.Product.findByPk(productId);
     }
 
+    async createProduct(name, description, unitPrice, brandId, categoryId, imageUrl, quantity) {
+        return this.Product.create({ name, description, unitPrice, brandId, categoryId, imageUrl, quantity });
+    }
+
+    async updateProduct(productId, name, description, unitPrice, brandId, categoryId, imageUrl, quantity) {
+        const [updatedRowsCount] = await this.Product.update(
+            { name, description, unitPrice, brandId, categoryId, imageUrl, quantity },
+            { where: { id: productId } }
+        );
+
+        if (updatedRowsCount === 0) {
+            throw new Error("Product not found or not updated");
+        }
+
+        return this.getById(productId);
+    }
+
     async deleteProduct(productId) {
-        const deletedRowCount = await this.Product.destroy({ where: { id: productId } });
-        if (deletedRowCount === 0) {
+        const product = await this.getById(productId);
+
+        if (!product) {
             throw new Error("Product not found");
         }
+
+        await product.destroy();
     }
 }
 

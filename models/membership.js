@@ -6,25 +6,25 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.DataTypes.STRING,
                 allowNull: false,
             },
-            min_purchase_quantity: {
-                type: Sequelize.DataTypes.INTEGER,
-                allowNull: false,
-            },
-            max_purchase_quantity: {
-                type: Sequelize.DataTypes.INTEGER,
-            },
             discount_percentage: {
-                type: Sequelize.DataTypes.FLOAT,
+                type: Sequelize.DataTypes.INTEGER,
                 allowNull: false,
+            },
+            min_items: {
+                type: Sequelize.DataTypes.INTEGER,
+                allowNull: true,
+            },
+            max_items: {
+                type: Sequelize.DataTypes.INTEGER,
+                allowNull: true,
             },
         },
         {
-            timestamps: false,
+            timestamps: true,
         }
     );
 
     Membership.associate = function (models) {
-        Membership.hasMany(models.Order);
     };
 
     return Membership;
