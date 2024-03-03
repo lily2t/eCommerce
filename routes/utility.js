@@ -7,7 +7,7 @@ const ProductService = require('../services/productService');
 const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware');
 
 // POST initial database population
-router.post('/init', async (req, res) => {
+router.post('/init', authenticateJWT, isAdmin, async (req, res) => {
     try {
         const roles = await RoleService.initRoles();
         const adminRole = roles.find(role => role.name === 'Admin');
