@@ -1,75 +1,93 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+const db = require('../models');
 const UserService = require('../services/userService');
+var bodyParser = require('body-parser')
+var jsonParser = bodyParser.json()
+var jwt = require('jsonwebtoken')
 
-router.post('/register', async (req, res) => {
+const userService = new UserService(db);
+// POST /auth/login
+router.post('/login', jsonParser, async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const { firstName, lastName, username, email, password, address, telephoneNumber } = req.body;
-
-    if (!firstName || !lastName || !username || !email || !password || !address || !telephoneNumber) {
-      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'All fields are required.' } });
+    const user = await userService.getByEmail(email);
+    if (!user) {
+      return res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'User not found' } });
     }
 
-    const existingUser = await UserService.getByEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'Email already exists.' } });
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hashedPassword = await new Promise((resolve, reject) => {
+      crypto.pbkdf2(password, salt, 310000, 32, 'sha256', (err, hashedPassword) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(hashedPassword.toString('hex'));
+        }
+      });
+    });
+
+    let token;
+    try {
+      token = jwt.sign(
+        { id: user.id, email: user.Email },
+        process.env.TOKEN_SECRET,
+        { expiresIn: "1hr" }
+      );
+    } catch (err) {
+      res.status(500).jsend.error("Something went wrong with creating JWT token")
     }
 
-    const hashedPassword = await crypto.hash(password, 10);
-
-    const newUser = await UserService.create(firstName, lastName, username, email, hashedPassword, address, telephoneNumber);
-
-    const token = jwt.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
-
-    res.status(200).json({
+    res.json({
       status: 'success',
       statuscode: 200,
       data: {
-        result: 'You created an account.',
-        id: newUser.id,
-        email: newUser.email,
+        result: 'Login successful',
+        id: user.id,
+        email: user.email,
+        name: user.firstName + ' ' + user.lastName,
         token: token
       }
     });
   } catch (error) {
-    res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error creating user.' } });
+    console.error(error);
+    res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Internal Server Error' } });
   }
 });
 
-router.post('/login', async (req, res) => {
+// POST /auth/register
+router.post('/register', jsonParser, async (req, res) => {
+  const { firstName, lastName, userName, email, password, address, telephoneNumber } = req.body;
+
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'Email and password are required.' } });
+    if (!firstName || !lastName || !userName || !email || !password || !address || !telephoneNumber) {
+      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'All fields are required' } });
     }
 
-    const user = await UserService.getByEmail(email);
-    if (!user) {
-      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'Invalid email or password.' } });
+    const existingUser = await userService.getByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'User already exists' } });
     }
 
-    const isPasswordValid = await crypto.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'Invalid email or password.' } });
-    }
-
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
-
-    res.status(200).json({
-      status: 'success',
-      statuscode: 200,
-      data: {
-        result: 'You are logged in.',
-        id: user.id,
-        email: user.email,
-        token: token
-      }
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hashedPassword = await new Promise((resolve, reject) => {
+      crypto.pbkdf2(password, salt, 310000, 32, 'sha256', (err, hashedPassword) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(hashedPassword.toString('hex'));
+        }
+      });
     });
+
+    const newUser = await userService.create(firstName, lastName, userName, email, hashedPassword, salt, address, telephoneNumber);
+
+    res.status(201).json({ status: 'success', statuscode: 200, data: { result: 'User created successfully' } });
   } catch (error) {
-    res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error logging in.' } });
+    console.error(error);
+    res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Internal Server Error' } });
   }
 });
 

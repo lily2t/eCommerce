@@ -1,5 +1,3 @@
-const crypto = require('crypto');
-
 class UserService {
     constructor(db) {
         this.User = db.User;
@@ -13,9 +11,17 @@ class UserService {
         return this.User.findByPk(userId);
     }
 
-    async create(firstName, lastName, email, password, address, telephoneNumber) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return this.User.create({ firstName, lastName, email, password: hashedPassword, address, telephoneNumber });
+    async create(firstName, lastName, userName, email, encryptedPassword, salt, address, telephoneNumber) {
+        return this.User.create({
+            firstName,
+            lastName,
+            userName,
+            email,
+            EncryptedPassword: encryptedPassword,
+            salt,
+            address,
+            telephoneNumber
+        });
     }
 
     async updateRole(userId, roleId) {

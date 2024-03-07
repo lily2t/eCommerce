@@ -2,23 +2,6 @@ module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define(
         'User',
         {
-            username: {
-                type: Sequelize.DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-            },
-            email: {
-                type: Sequelize.DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-                validate: {
-                    isEmail: true,
-                },
-            },
-            password: {
-                type: Sequelize.DataTypes.STRING,
-                allowNull: false,
-            },
             firstName: {
                 type: Sequelize.DataTypes.STRING,
                 allowNull: false,
@@ -27,13 +10,31 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.DataTypes.STRING,
                 allowNull: false,
             },
+            userName: {
+                type: Sequelize.DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+            },
+            email: {
+                type: Sequelize.DataTypes.STRING,
+                allowNull: false,
+                unique: true
+            },
+            EncryptedPassword: {
+                type: Sequelize.DataTypes.BLOB,
+                allowNull: false,
+            },
+            Salt: {
+                type: Sequelize.DataTypes.BLOB,
+                // allowNull: false,
+            },
             address: {
                 type: Sequelize.DataTypes.STRING,
                 allowNull: false,
             },
             telephoneNumber: {
                 type: Sequelize.DataTypes.STRING,
-                allowNull: false,
+                // allowNull: false,
             },
         },
         {
