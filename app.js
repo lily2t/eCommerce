@@ -37,7 +37,7 @@ app.use('/brands', brandRouter);
 app.use('/membership', membershipRouter);
 app.use('/orders', orderRouter);
 app.use('/cart', cartRouter);
-app.use('/init', utilityRouter);
+app.use('/utility', utilityRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
