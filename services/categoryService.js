@@ -1,38 +1,39 @@
 class CategoryService {
     constructor(db) {
         this.Category = db.Category;
+        this.Product = db.Product;
     }
 
-    async getAll() {
+    async getAllCategories() {
         return this.Category.findAll();
     }
 
-    async getById(categoryId) {
-        return this.Category.findByPk(categoryId);
-    }
-
-    async create(name) {
+    async addCategory(name) {
         return this.Category.create({ name });
     }
 
-    async update(categoryId, name) {
-        const [updatedRowsCount] = await this.Category.update({ name }, { where: { id: categoryId } });
-
-        if (updatedRowsCount === 0) {
-            throw new Error("Category not found or not updated");
+    async updateCategory(categoryId, updatedFields) {
+        const category = await this.Category.findByPk(categoryId);
+        if (!category) {
+            throw new Error("Category not found");
         }
-
-        return this.getById(categoryId);
+        await category.update(updatedFields);
+        return category;
     }
 
-    async delete(categoryId) {
-        const category = await this.getById(categoryId);
-
+    async deleteCategory(categoryId) {
+        const category = await this.Category.findByPk(categoryId);
         if (!category) {
             throw new Error("Category not found");
         }
 
+        const productsInCategory = await this.Product.findAll({ where: { CategoryId: categoryId } });
+        if (productsInCategory.length > 0) {
+            throw new Error("Category has assigned products and cannot be deleted");
+        }
+
         await category.destroy();
+        return category;
     }
 }
 

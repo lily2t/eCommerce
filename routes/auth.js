@@ -63,12 +63,18 @@ router.post('/register', jsonParser, async (req, res) => {
 
   try {
     if (!firstName || !lastName || !userName || !email || !password || !address || !telephoneNumber) {
-      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'All fields are required' } });
+      return res.status(400).json({
+        status: 'error',
+        statuscode: 400, data: { result: 'All fields are required' }
+      });
     }
 
     const existingUser = await userService.getByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'User already exists' } });
+      return res.status(400).json({
+        status: 'error',
+        statuscode: 400, data: { result: 'User already exists' }
+      });
     }
 
     const salt = crypto.randomBytes(16).toString('hex');

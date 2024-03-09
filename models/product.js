@@ -10,7 +10,7 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.DataTypes.TEXT,
                 allowNull: false,
             },
-            unitprice: {
+            unitPrice: {
                 type: Sequelize.DataTypes.FLOAT,
                 allowNull: false,
             },
@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.DataTypes.INTEGER,
                 allowNull: false,
             },
-            isdeleted: {
+            isDeleted: {
                 type: Sequelize.DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: false,
