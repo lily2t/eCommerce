@@ -1,38 +1,71 @@
 class CartService {
     constructor(db) {
         this.Cart = db.Cart;
-    }
-
-    async getByUserId(userId) {
-        return this.Cart.findAll({ where: { userId } });
+        this.Product = db.Product;
     }
 
     async addToCart(userId, productId, quantity) {
-        return this.Cart.create({ userId, productId, quantity });
+        const product = await this.Product.findByPk(productId);
+        if (!product) {
+            throw new Error("Product not found");
+        }
+
+        if (product.quantity < quantity) {
+            throw new Error("Product quantity not enough");
+        }
+
+        let cartItem = await this.Cart.findOne({ where: { UserId: userId, ProductId: productId } });
+
+        if (cartItem) {
+            cartItem.quantity += quantity;
+            await cartItem.save();
+        } else {
+            cartItem = await this.Cart.create({
+                UserId: userId,
+                ProductId: productId,
+                quantity: quantity,
+                unitPrice: product.unitPrice
+            });
+        }
+
+        return cartItem;
+    }
+
+    async getCartItems(userId) {
+        return this.Cart.findAll({
+            where: { UserId: userId },
+            include: [{ model: this.Product }]
+        });
     }
 
     async updateCartItem(cartItemId, quantity) {
-        const [updatedRowsCount] = await this.Cart.update({ quantity }, { where: { id: cartItemId } });
-
-        if (updatedRowsCount === 0) {
-            throw new Error("Cart item not found or not updated");
+        const cartItem = await this.Cart.findByPk(cartItemId);
+        if (!cartItem) {
+            throw new Error("Cart item not found");
         }
 
-        return this.getCartItemById(cartItemId);
+        const product = await this.Product.findByPk(cartItem.ProductId);
+        if (!product) {
+            throw new Error("Product not found");
+        }
+
+        if (product.quantity < quantity) {
+            throw new Error("Product quantity not enough");
+        }
+
+        cartItem.quantity = quantity;
+        await cartItem.save();
+        return cartItem;
     }
 
-    async removeFromCart(cartItemId) {
-        const cartItem = await this.getCartItemById(cartItemId);
-
+    async deleteCartItem(cartItemId) {
+        const cartItem = await this.Cart.findByPk(cartItemId);
         if (!cartItem) {
             throw new Error("Cart item not found");
         }
 
         await cartItem.destroy();
-    }
-
-    async getCartItemById(cartItemId) {
-        return this.Cart.findByPk(cartItemId);
+        return cartItem;
     }
 }
 

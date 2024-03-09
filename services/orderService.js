@@ -1,32 +1,45 @@
 class OrderService {
     constructor(db) {
         this.Order = db.Order;
+        this.OrderItem = db.OrderItem;
     }
 
-    async getByUserId(userId) {
-        return this.Order.findAll({ where: { userId } });
+    async getAllOrders(userId) {
+        if (userId) {
+            return this.Order.findAll({ where: { UserId: userId } });
+        } else {
+            return this.Order.findAll();
+        }
     }
 
-    async getAll() {
-        return this.Order.findAll();
-    }
-
-    async create(userId, status, totalAmount) {
-        return this.Order.create({ userId, status, totalAmount });
-    }
-
-    async update(orderId, status) {
-        const [updatedRowsCount] = await this.Order.update({ status }, { where: { id: orderId } });
-
-        if (updatedRowsCount === 0) {
-            throw new Error("Order not found or not updated");
+    async updateOrderStatus(orderId, status) {
+        const order = await this.Order.findByPk(orderId);
+        if (!order) {
+            throw new Error("Order not found");
         }
 
-        return this.getOrderById(orderId);
+        order.status = status;
+        await order.save();
+        return order;
     }
 
-    async getOrderById(orderId) {
-        return this.Order.findByPk(orderId);
+    async createOrder(userId, orderNumber, membershipStatus, orderItems) {
+        const order = await this.Order.create({
+            UserId: userId,
+            orderNumber: orderNumber,
+            membershipStatus: membershipStatus
+        });
+
+        for (const orderItem of orderItems) {
+            await this.OrderItem.create({
+                OrderId: order.id,
+                ProductId: orderItem.productId,
+                quantity: orderItem.quantity,
+                unitPrice: orderItem.unitPrice
+            });
+        }
+
+        return order;
     }
 }
 

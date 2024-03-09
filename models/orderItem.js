@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-    const Cart = sequelize.define(
-        'Cart',
+    const OrderItem = sequelize.define(
+        'OrderItem',
         {
             quantity: {
                 type: Sequelize.DataTypes.INTEGER,
@@ -24,10 +24,10 @@ module.exports = (sequelize, Sequelize) => {
         }
     );
 
-    Cart.associate = function (models) {
-        Cart.belongsTo(models.Product);
-        Cart.belongsTo(models.User);
+    OrderItem.associate = function (models) {
+        OrderItem.belongsTo(models.Product);
+        OrderItem.belongsTo(models.Order);
     };
 
-    return Cart;
+    return OrderItem;
 };

@@ -1,64 +1,81 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../models');
 const MembershipService = require('../services/membershipService');
-const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware');
+const jsonParser = express.json();
 
-// GET all memberships (admin only)
-router.get('/', authenticateJWT, isAdmin, async (req, res) => {
+const membershipService = new MembershipService(db);
+
+router.post('/', jsonParser, async (req, res) => {
+    const { name, discount_percentage, min_items, max_items } = req.body;
+
     try {
-        const memberships = await MembershipService.getAllMemberships();
-        res.status(200).json({ status: 'success', statuscode: 200, data: { memberships } });
+        const membership = await membershipService.createMembership(name, discount_percentage, min_items, max_items);
+        res.status(201).json({
+            status: 'success',
+            statuscode: 201, data: { result: 'Membership added successfully', membership }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error fetching memberships.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: 'Internal Server Error' }
+        });
     }
 });
 
-// POST new membership (admin only)
-router.post('/', authenticateJWT, isAdmin, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const { name, minItems, maxItems, discount } = req.body;
-        if (!name || !minItems || !maxItems || !discount) {
-            return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'All fields are required.' } });
-        }
-        const existingMembership = await MembershipService.getMembershipByName(name);
-        if (existingMembership) {
-            return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'Membership already exists.' } });
-        }
-        const newMembership = await MembershipService.createMembership(name, minItems, maxItems, discount);
-        res.status(200).json({ status: 'success', statuscode: 200, data: { result: 'Membership created successfully.', membership: newMembership } });
+        const memberships = await membershipService.getAllMemberships();
+        res.json({
+            status: 'success',
+            statuscode: 200, data: { result: 'Memberships found', memberships }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error creating membership.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: 'Internal Server Error' }
+        });
     }
 });
 
-// PUT update membership by ID (admin only)
-router.put('/:id', authenticateJWT, isAdmin, async (req, res) => {
+router.put('/:membershipId', jsonParser, async (req, res) => {
+    const membershipId = req.params.membershipId;
+    const updatedFields = req.body;
+
     try {
-        const { name, minItems, maxItems, discount } = req.body;
-        if (!name || !minItems || !maxItems || !discount) {
-            return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'All fields are required.' } });
-        }
-        const updatedMembership = await MembershipService.updateMembership(req.params.id, name, minItems, maxItems, discount);
-        if (!updatedMembership) {
-            return res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'Membership not found.' } });
-        }
-        res.status(200).json({ status: 'success', statuscode: 200, data: { result: 'Membership updated successfully.', membership: updatedMembership } });
+        const membership = await membershipService.updateMembership(membershipId, updatedFields);
+        res.json({
+            status: 'success',
+            statuscode: 200, data: { result: 'Membership updated successfully', membership }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error updating membership.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: 'Internal Server Error' }
+        });
     }
 });
 
-// DELETE membership by ID (admin only)
-router.delete('/:id', authenticateJWT, isAdmin, async (req, res) => {
+router.delete('/:membershipId', async (req, res) => {
+    const membershipId = req.params.membershipId;
+
     try {
-        const membership = await MembershipService.getMembershipById(req.params.id);
-        if (!membership) {
-            return res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'Membership not found.' } });
-        }
-        await MembershipService.deleteMembership(req.params.id);
-        res.status(200).json({ status: 'success', statuscode: 200, data: { result: 'Membership deleted successfully.' } });
+        const membership = await membershipService.deleteMembership(membershipId);
+        res.json({
+            status: 'success',
+            statuscode: 200, data: {
+                result: 'Membership deleted successfully', membership
+            }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error deleting membership.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: error.message }
+        });
     }
 });
 

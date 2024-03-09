@@ -1,38 +1,43 @@
 class MembershipService {
     constructor(db) {
         this.Membership = db.Membership;
+        this.User = db.User;
     }
 
-    async getAll() {
+    async createMembership(name, discount_percentage, min_items, max_items) {
+        return this.Membership.create({ name, discount_percentage, min_items, max_items });
+    }
+
+    async getAllMemberships() {
         return this.Membership.findAll();
     }
 
-    async getById(membershipId) {
-        return this.Membership.findByPk(membershipId);
-    }
-
-    async create(name, discount) {
-        return this.Membership.create({ name, discount });
-    }
-
-    async update(membershipId, name, discount) {
-        const [updatedRowsCount] = await this.Membership.update({ name, discount }, { where: { id: membershipId } });
-
-        if (updatedRowsCount === 0) {
-            throw new Error("Membership not found or not updated");
+    async updateMembership(membershipId, updatedFields) {
+        const membership = await this.Membership.findByPk(membershipId);
+        if (!membership) {
+            throw new Error("Membership not found");
         }
-
-        return this.getById(membershipId);
+        await membership.update(updatedFields);
+        return membership;
     }
 
-    async delete(membershipId) {
-        const membership = await this.getById(membershipId);
-
+    async deleteMembership(membershipId) {
+        const membership = await this.Membership.findByPk(membershipId);
         if (!membership) {
             throw new Error("Membership not found");
         }
 
+        const usersWithMembership = await this.User.findAll({
+            where: {
+                MembershipId: membershipId
+            }
+        });
+        if (usersWithMembership.length > 0) {
+            throw new Error("Membership is assigned to a user and cannot be deleted");
+        }
+
         await membership.destroy();
+        return membership;
     }
 }
 

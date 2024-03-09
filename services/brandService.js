@@ -1,38 +1,41 @@
 class BrandService {
     constructor(db) {
         this.Brand = db.Brand;
+        this.Product = db.Product;
     }
 
     async getAllBrands() {
         return this.Brand.findAll();
     }
 
-    async getBrandById(brandId) {
-        return this.Brand.findByPk(brandId);
-    }
-
-    async createBrand(name) {
+    async addBrand(name) {
         return this.Brand.create({ name });
     }
 
-    async updateBrand(brandId, name) {
-        const [updatedRowsCount] = await this.Brand.update({ name }, { where: { id: brandId } });
-
-        if (updatedRowsCount === 0) {
-            throw new Error("Brand not found or not updated");
+    async updateBrand(brandId, updatedFields) {
+        const brand = await this.Brand.findByPk(brandId);
+        if (!brand) {
+            throw new Error("Brand not found");
         }
-
-        return this.getById(brandId);
+        await brand.update(updatedFields);
+        return brand;
     }
 
     async deleteBrand(brandId) {
-        const brand = await this.getById(brandId);
-
+        const brand = await this.Brand.findByPk(brandId);
         if (!brand) {
             throw new Error("Brand not found");
         }
 
+        const productsWithBrand = await this.Product.findAll({
+            where: { BrandId: brandId }
+        });
+        if (productsWithBrand.length > 0) {
+            throw new Error("Brand has assigned products and cannot be deleted");
+        }
+
         await brand.destroy();
+        return brand;
     }
 }
 

@@ -1,63 +1,81 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../models');
 const CartService = require('../services/cartService');
-const { authenticateJWT } = require('../middleware/authMiddleware');
+const jsonParser = express.json();
 
-// GET all cart items for the logged in user
-router.get('/', authenticateJWT, async (req, res) => {
+const cartService = new CartService(db);
+
+router.post('/', jsonParser, async (req, res) => {
+    const { userId, productId, quantity } = req.body;
+
     try {
-        const userId = req.user.id;
-        const cartItems = await CartService.getCartItemsByUserId(userId);
-        res.status(200).json({ status: 'success', statuscode: 200, data: { cartItems } });
+        const cartItem = await cartService.addToCart(userId, productId, quantity);
+        res.status(201).json({
+            status: 'success',
+            statuscode: 201, data: { result: 'Product added to cart successfully', cartItem }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error fetching cart items.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: error.message }
+        });
     }
 });
 
-// POST add a product to the logged in user's cart
-router.post('/', authenticateJWT, async (req, res) => {
+router.get('/', async (req, res) => {
+    const userId = req.query.userId;
+
     try {
-        const userId = req.user.id;
-        const { productId, quantity } = req.body;
-        if (!productId || !quantity) {
-            return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'ProductId and quantity are required.' } });
-        }
-        const addedItem = await CartService.addToCart(userId, productId, quantity);
-        res.status(200).json({ status: 'success', statuscode: 200, data: { result: 'Product added to cart.', addedItem } });
+        const cartItems = await cartService.getCartItems(userId);
+        res.json({
+            status: 'success',
+            statuscode: 200, data: { result: 'Cart items found', cartItems }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error adding product to cart.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: error.message }
+        });
     }
 });
 
-// PUT update quantity of a product in the logged in user's cart
-router.put('/:id', authenticateJWT, async (req, res) => {
+router.put('/:cartItemId', jsonParser, async (req, res) => {
+    const cartItemId = req.params.cartItemId;
+    const { quantity } = req.body;
+
     try {
-        const cartItemId = req.params.id;
-        const { quantity } = req.body;
-        if (!quantity) {
-            return res.status(400).json({ status: 'error', statuscode: 400, data: { result: 'Quantity is required.' } });
-        }
-        const updatedItem = await CartService.updateCartItemQuantity(cartItemId, quantity);
-        if (!updatedItem) {
-            return res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'Cart item not found.' } });
-        }
-        res.status(200).json({ status: 'success', statuscode: 200, data: { result: 'Cart item quantity updated.', updatedItem } });
+        const cartItem = await cartService.updateCartItem(cartItemId, quantity);
+        res.json({
+            status: 'success',
+            statuscode: 200, data: { result: 'Cart item updated successfully', cartItem }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error updating cart item quantity.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: error.message }
+        });
     }
 });
 
-// DELETE remove a product from the logged in user's cart
-router.delete('/:id', authenticateJWT, async (req, res) => {
+router.delete('/:cartItemId', async (req, res) => {
+    const cartItemId = req.params.cartItemId;
+
     try {
-        const cartItemId = req.params.id;
-        const removedItem = await CartService.removeCartItem(cartItemId);
-        if (!removedItem) {
-            return res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'Cart item not found.' } });
-        }
-        res.status(200).json({ status: 'success', statuscode: 200, data: { result: 'Cart item removed.', removedItem } });
+        const cartItem = await cartService.deleteCartItem(cartItemId);
+        res.json({
+            status: 'success',
+            statuscode: 200, data: { result: 'Cart item deleted successfully', cartItem }
+        });
     } catch (error) {
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Error removing cart item.' } });
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: { result: error.message }
+        });
     }
 });
 

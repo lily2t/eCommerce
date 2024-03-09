@@ -11,6 +11,7 @@ var productRouter = require('./routes/product');
 var categoryRouter = require('./routes/category');
 var brandRouter = require('./routes/brand');
 var cartRouter = require('./routes/cart');
+var orderRouter = require('./routes/order');
 var membershipRouter = require('./routes/membership');
 var utilityRouter = require('./routes/utility');
 
@@ -34,6 +35,7 @@ app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
 app.use('/brands', brandRouter);
 app.use('/membership', membershipRouter);
+app.use('/orders', orderRouter);
 app.use('/cart', cartRouter);
 app.use('/init', utilityRouter);
 
