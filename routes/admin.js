@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const router = express.Router();
+const axios = require('axios');
 const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware.js');
 
 router.get('/', (req, res) => {
@@ -13,6 +14,10 @@ router.post('/login', async (req, res, next) => {
         const { username, password } = req.body;
 
         if (!username || !password) {
+            res.render('login',
+                {
+                    message: 'Username and password are required'
+                })
             return res.status(400).json({
                 status: 'error',
                 message: 'Username and password are required'
@@ -38,13 +43,13 @@ router.post('/login', async (req, res, next) => {
 
             response.on('end', () => {
                 const responseData = JSON.parse(data);
-                console.log('The response is: ', responseData);
+
                 if (response.statusCode === 200) {
-                    const token = responseData.data.token;
+                    const token = responseData.token;
                     res.redirect(`/admin/dashboard?token=${token}`);
                 } else {
                     res.render('admin/login', {
-                        error: responseData.data.result
+                        error: responseData.data
                     });
                 }
             });
@@ -65,6 +70,12 @@ router.post('/login', async (req, res, next) => {
 router.get('/dashboard', authenticateJWT, async (req, res, next) => {
     try {
         const token = req.query.token;
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
         res.render('admin/dashboard', { token });
     } catch (error) {
         next(error);
@@ -72,17 +83,16 @@ router.get('/dashboard', authenticateJWT, async (req, res, next) => {
 });
 
 
-// Products route
+// Route to get all products
 router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
     try {
         const options = {
             hostname: 'localhost',
-            port: 3000,
+            port: 3000, 
             path: '/products',
             method: 'GET',
             headers: {
-                'Authorization': req.headers.authorization,
-                'Content-Type': 'application/json'
+                Authorization: req.headers.authorization
             }
         };
 
@@ -93,15 +103,11 @@ router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
                 data += chunk;
             });
 
+
             response.on('end', () => {
-                if (response.statusCode === 200) {
-                    const products = JSON.parse(data);
-                    console.log(products);
-                    res.render('admin/products',
-                        { products });
-                } else {
-                    next(new Error(`Failed to fetch products: ${response.statusCode}`));
-                }
+                const products = JSON.parse(data);
+                console.log('The response is:', products);
+                res.render('products', { products });
             });
         });
 
@@ -110,6 +116,47 @@ router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
         });
 
         request.end();
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Route to add a new product
+router.post('/products', authenticateJWT, isAdmin, async (req, res, next) => {
+    try {
+        http.post('http://localhost:3000/admin/products', req.body, {
+            headers: {
+                Authorization: req.headers.authorization
+            }
+        }, (response) => {
+        }).on('error', (error) => {
+            next(error);
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Route to update a product
+router.put('/products/:productId', authenticateJWT, isAdmin, async (req, res, next) => {
+    try {
+        http.put(`http://localhost:3000/admin/products/${req.params.productId}`, req.body, { headers: { Authorization: req.headers.authorization } }, (response) => {
+        }).on('error', (error) => {
+            next(error);
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Route to delete a product (soft delete)
+router.delete('/products/:productId', authenticateJWT, isAdmin, async (req, res, next) => {
+    try {
+        http.delete(`http://localhost:3000/admin/products/${req.params.productId}`, { headers: { Authorization: req.headers.authorization } }, (response) => {
+
+        }).on('error', (error) => {
+            next(error);
+        });
     } catch (error) {
         next(error);
     }

@@ -20,12 +20,13 @@ class UserService {
         return this.User.findOne({ where: { email } });
     }
 
-    async getByUsername(userName) {
-        return this.User.findOne({ where: { userName } });
-    }
-
     async getById(userId) {
         return this.User.findByPk(userId);
+    }
+
+    async getRoleIdByEmail(email) {
+        const user = await this.User.findOne({ where: { email } });
+        return user ? user.RoleId : null;
     }
 
     async updateRole(userId, roleId) {
@@ -38,11 +39,7 @@ class UserService {
         return user;
     }
 
-    async validPassword(user, password) {
-        const salt = user.salt;
-        const hashedPassword = crypto.pbkdf2Sync(password, salt, 310000, 32, 'sha256').toString('hex');
-        return user.EncryptedPassword === hashedPassword;
-    }
+
 }
 
 module.exports = UserService;

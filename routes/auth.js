@@ -65,30 +65,40 @@ router.post('/login', jsonParser, async (req, res) => {
 
 //login only for admin
 router.post('/admin/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
+  console.log('The user is from auth router: ', req.body);
 
   try {
-    const user = await userService.getByUsername(username);
+    const user = await userService.getByEmail(email);
     if (!user) {
       return res.status(404).json({
         status: 'error',
-        statuscode: 404, data: { result: 'User not found' }
+        statuscode: 404,
+        data: {
+          result: 'User not found'
+        }
       });
     }
 
-    if (!await userService.validPassword(user, password)) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Invalid username or password'
-      });
-    }
-
-    if (user.username !== 'admin') {
+    const userRoleId = await userService.getRoleIdByEmail(email);
+    if (userRoleId !== 1) {
       return res.status(403).json({
         status: 'error',
         message: 'Unauthorized access. Only admins are allowed to login.'
       });
     }
+
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hashedPassword = await new Promise((resolve, reject) => {
+      crypto.pbkdf2(password, salt, 310000, 32, 'sha256',
+        (err, hashedPassword) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(hashedPassword.toString('hex'));
+          }
+        });
+    });
 
     // Generate JWT token
     const token = jwt.sign(
