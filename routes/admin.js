@@ -22,7 +22,7 @@ router.post('/login', async (req, res, next) => {
         const options = {
             hostname: 'localhost',
             port: 3000,
-            path: '/auth/login',
+            path: '/auth/admin/login',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -38,6 +38,7 @@ router.post('/login', async (req, res, next) => {
 
             response.on('end', () => {
                 const responseData = JSON.parse(data);
+                console.log('The response is: ', responseData);
                 if (response.statusCode === 200) {
                     const token = responseData.data.token;
                     res.redirect(`/admin/dashboard?token=${token}`);

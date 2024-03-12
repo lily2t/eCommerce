@@ -3,14 +3,6 @@ class UserService {
         this.User = db.User;
     }
 
-    async getByEmail(email) {
-        return this.User.findOne({ where: { email } });
-    }
-
-    async getById(userId) {
-        return this.User.findByPk(userId);
-    }
-
     async create(firstName, lastName, userName, email, encryptedPassword, salt, address, telephoneNumber) {
         return this.User.create({
             firstName,
@@ -24,6 +16,18 @@ class UserService {
         });
     }
 
+    async getByEmail(email) {
+        return this.User.findOne({ where: { email } });
+    }
+
+    async getByUsername(userName) {
+        return this.User.findOne({ where: { userName } });
+    }
+
+    async getById(userId) {
+        return this.User.findByPk(userId);
+    }
+
     async updateRole(userId, roleId) {
         const user = await this.getById(userId);
         if (!user) {
@@ -32,6 +36,12 @@ class UserService {
         user.roleId = roleId;
         await user.save();
         return user;
+    }
+
+    async validPassword(user, password) {
+        const salt = user.salt;
+        const hashedPassword = crypto.pbkdf2Sync(password, salt, 310000, 32, 'sha256').toString('hex');
+        return user.EncryptedPassword === hashedPassword;
     }
 }
 

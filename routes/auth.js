@@ -63,6 +63,58 @@ router.post('/login', jsonParser, async (req, res) => {
   }
 });
 
+//login only for admin
+router.post('/admin/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await userService.getByUsername(username);
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        statuscode: 404, data: { result: 'User not found' }
+      });
+    }
+
+    if (!await userService.validPassword(user, password)) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'Invalid username or password'
+      });
+    }
+
+    if (user.username !== 'admin') {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Unauthorized access. Only admins are allowed to login.'
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username
+      },
+      process.env.TOKEN_SECRET,
+      { expiresIn: '2hr' }
+    );
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Admin login successful',
+      token: token
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal server error'
+    });
+  }
+});
+
+
 // POST /auth/register
 router.post('/register', jsonParser, async (req, res) => {
   const { firstName, lastName, userName, email, password, address, telephoneNumber } = req.body;
