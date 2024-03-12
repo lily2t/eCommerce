@@ -3,9 +3,9 @@ const router = express.Router();
 const crypto = require('crypto');
 const db = require('../models');
 const UserService = require('../services/userService');
-var bodyParser = require('body-parser')
-var jsonParser = bodyParser.json()
-var jwt = require('jsonwebtoken')
+var bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
+var jwt = require('jsonwebtoken');
 
 const userService = new UserService(db);
 // POST /auth/login
@@ -34,7 +34,7 @@ router.post('/login', jsonParser, async (req, res) => {
       token = jwt.sign(
         { id: user.id, email: user.Email },
         process.env.TOKEN_SECRET,
-        { expiresIn: "1hr" }
+        { expiresIn: "2hr" }
       );
     } catch (err) {
       res.status(500).jsend.error("Something went wrong with creating JWT token")
@@ -53,7 +53,13 @@ router.post('/login', jsonParser, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Internal Server Error' } });
+    res.status(500).json({
+      status: 'error',
+      statuscode: 500, data: {
+        result:
+          'Internal Server Error'
+      }
+    });
   }
 });
 

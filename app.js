@@ -14,6 +14,8 @@ var cartRouter = require('./routes/cart');
 var orderRouter = require('./routes/order');
 var membershipRouter = require('./routes/membership');
 var utilityRouter = require('./routes/utility');
+var adminRouter = require('./routes/admin');
+
 
 var db = require('./models');
 db.sequelize.sync({ force: true });
@@ -38,6 +40,7 @@ app.use('/membership', membershipRouter);
 app.use('/orders', orderRouter);
 app.use('/cart', cartRouter);
 app.use('/utility', utilityRouter);
+app.use('/admin', adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

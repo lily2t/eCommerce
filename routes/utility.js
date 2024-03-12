@@ -5,6 +5,7 @@ const db = require('../models');
 const crypto = require('crypto');
 
 router.post('/init', async (req, res) => {
+
     try {
         // Check if database is already populated
         const productsCount = await db.Product.count();
@@ -47,8 +48,16 @@ router.post('/init', async (req, res) => {
         const responseData = JSON.parse(response);
         const productsData = responseData.data;
 
-        // Populate products table
         for (const productData of productsData) {
+            const [brand, createdBrand] = await db.Brand.findOrCreate({
+                where: { name: productData.brand }
+            });
+
+            const [category, createdCategory] = await db.Category.findOrCreate({
+                where: { name: productData.category }
+            });
+
+            // Create Product
             await db.Product.create({
                 name: productData.name,
                 description: productData.description,
@@ -57,8 +66,8 @@ router.post('/init', async (req, res) => {
                 imgurl: productData.imgurl,
                 quantity: productData.quantity,
                 isDeleted: productData.isdeleted,
-                BrandId: productData.BrandId,
-                CategoryId: productData.CategoryId
+                BrandId: brand.id,
+                CategoryId: category.id
             });
         }
 
