@@ -1,68 +1,78 @@
-const db = require('../models');
+const { Role } = require('../models');
 
-const Role = db.Role;
-
-const createRole = async (name) => {
-    try {
-        const role = await Role.create({ name });
-        return role;
-    } catch (error) {
-        throw new Error('Error creating role');
+class RoleService {
+    constructor(db) {
+        this.Role = db.Role;
     }
-};
 
-const getAllRoles = async () => {
-    try {
-        const roles = await Role.findAll();
-        return roles;
-    } catch (error) {
-        throw new Error('Error fetching roles');
-    }
-};
-
-const getRoleById = async (id) => {
-    try {
-        const role = await Role.findByPk(id);
-        if (!role) {
-            throw new Error('Role not found');
+    async createRole(name) {
+        try {
+            const role = await this.Role.create({ name });
+            return role;
+        } catch (error) {
+            throw new Error('Error creating role');
         }
-        return role;
-    } catch (error) {
-        throw new Error('Error fetching role');
     }
-};
 
-const updateRole = async (id, name) => {
-    try {
-        const role = await Role.findByPk(id);
-        if (!role) {
-            throw new Error('Role not found');
+    async getAllRoles() {
+        try {
+            const roles = await this.Role.findAll();
+            return roles;
+        } catch (error) {
+            throw new Error('Error fetching roles');
         }
-        role.name = name;
-        await role.save();
-        return role;
-    } catch (error) {
-        throw new Error('Error updating role');
     }
-};
 
-const deleteRole = async (id) => {
-    try {
-        const role = await Role.findByPk(id);
-        if (!role) {
-            throw new Error('Role not found');
+    async getRoleByName(name) {
+        try {
+            const role = await this.Role.findOne({ where: { name } });
+            if (!role) {
+                throw new Error('Role not found');
+            }
+            return role.id;
+        } catch (error) {
+            throw new Error('Error fetching role by name');
         }
-        await role.destroy();
-        return 'Role deleted successfully';
-    } catch (error) {
-        throw new Error('Error deleting role');
     }
-};
 
-module.exports = {
-    createRole,
-    getAllRoles,
-    getRoleById,
-    updateRole,
-    deleteRole,
-};
+    async getRoleById(id) {
+        try {
+            const role = await this.Role.findByPk(id);
+            if (!role) {
+                throw new Error('Role not found');
+            }
+            return role;
+        } catch (error) {
+            throw new Error('Error fetching role');
+        }
+    }
+
+    async updateRole(id, name) {
+        try {
+            const role = await this.Role.findByPk(id);
+            if (!role) {
+                throw new Error('Role not found');
+            }
+            role.name = name;
+            await role.save();
+            return role;
+        } catch (error) {
+            throw new Error('Error updating role');
+        }
+    }
+
+    async deleteRole(id) {
+        try {
+            const role = await this.Role.findByPk(id);
+            if (!role) {
+                throw new Error('Role not found');
+            }
+            await role.destroy();
+            return 'Role deleted successfully';
+        } catch (error) {
+            throw new Error('Error deleting role');
+        }
+    }
+}
+
+module.exports = RoleService;

@@ -83,16 +83,23 @@ router.get('/dashboard', authenticateJWT, async (req, res, next) => {
 });
 
 
-// Route to get all products
 router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
     try {
+        const token = req.query.token;
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
         const options = {
             hostname: 'localhost',
             port: 3000, 
             path: '/products',
             method: 'GET',
             headers: {
-                Authorization: req.headers.authorization
+                Authorization: `Bearer ${token}` 
             }
         };
 
@@ -103,11 +110,15 @@ router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
                 data += chunk;
             });
 
-
             response.on('end', () => {
-                const products = JSON.parse(data);
-                console.log('The response is:', products);
-                res.render('products', { products });
+                const responseData = JSON.parse(data);
+
+                if (responseData.status === 'success') {
+                    const products = responseData.data.products;
+                    res.render('admin/products', { products });
+                } else {
+                    res.status(responseData.statuscode).json(responseData);
+                }
             });
         });
 
@@ -121,21 +132,58 @@ router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
     }
 });
 
-// Route to add a new product
+
 router.post('/products', authenticateJWT, isAdmin, async (req, res, next) => {
     try {
-        http.post('http://localhost:3000/admin/products', req.body, {
+        const token = req.query.token;
+
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: '/admin/products',
+            method: 'POST',
             headers: {
-                Authorization: req.headers.authorization
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
             }
-        }, (response) => {
-        }).on('error', (error) => {
+        };
+
+        const request = http.request(options, (response) => {
+            let data = '';
+
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                const responseData = JSON.parse(data);
+
+                if (response.statusCode === 201) {
+                    res.json(responseData);
+                } else {
+                    res.status(response.statusCode).json(responseData);
+                }
+            });
+        });
+
+        request.on('error', (error) => {
             next(error);
         });
+
+        request.write(JSON.stringify(req.body));
+        request.end();
     } catch (error) {
         next(error);
     }
 });
+
 
 // Route to update a product
 router.put('/products/:productId', authenticateJWT, isAdmin, async (req, res, next) => {
@@ -165,7 +213,25 @@ router.delete('/products/:productId', authenticateJWT, isAdmin, async (req, res,
 // Brands route
 router.get('/brands', authenticateJWT, isAdmin, async (req, res, next) => {
     try {
-        http.get('http://localhost:3000/brands', (response) => {
+        const token = req.query.token;
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: '/brands',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+
+        const request = http.request(options, (response) => {
             let data = '';
 
             response.on('data', (chunk) => {
@@ -173,21 +239,50 @@ router.get('/brands', authenticateJWT, isAdmin, async (req, res, next) => {
             });
 
             response.on('end', () => {
-                const brands = JSON.parse(data);
-                res.render('admin/brands', { brands });
+                const responseData = JSON.parse(data);
+
+                if (responseData.status === 'success') {
+                    const brands = responseData.data.brands;
+                    res.render('admin/brands', { brands });
+                } else {
+                    res.status(responseData.statuscode).json(responseData);
+                }
             });
-        }).on('error', (error) => {
+        });
+
+        request.on('error', (error) => {
             next(error);
         });
+
+        request.end();
     } catch (error) {
         next(error);
     }
 });
+
 
 // Categories route
 router.get('/categories', authenticateJWT, isAdmin, async (req, res, next) => {
     try {
-        http.get('http://localhost:3000/categories', (response) => {
+        const token = req.query.token;
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: '/categories',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+
+        const request = http.request(options, (response) => {
             let data = '';
 
             response.on('data', (chunk) => {
@@ -195,21 +290,50 @@ router.get('/categories', authenticateJWT, isAdmin, async (req, res, next) => {
             });
 
             response.on('end', () => {
-                const categories = JSON.parse(data);
-                res.render('admin/categories', { categories });
+                const responseData = JSON.parse(data);
+
+                if (responseData.status === 'success') {
+                    const categories = responseData.data.categories;
+                    res.render('admin/categories', { categories });
+                } else {
+                    res.status(responseData.statuscode).json(responseData);
+                }
             });
-        }).on('error', (error) => {
+        });
+
+        request.on('error', (error) => {
             next(error);
         });
+
+        request.end();
     } catch (error) {
         next(error);
     }
 });
+
 
 // Orders route
 router.get('/orders', authenticateJWT, isAdmin, async (req, res, next) => {
     try {
-        http.get('http://localhost:3000/orders', (response) => {
+        const token = req.query.token;
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: '/orders',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+
+        const request = http.request(options, (response) => {
             let data = '';
 
             response.on('data', (chunk) => {
@@ -217,16 +341,27 @@ router.get('/orders', authenticateJWT, isAdmin, async (req, res, next) => {
             });
 
             response.on('end', () => {
-                const orders = JSON.parse(data);
-                res.render('admin/orders', { orders });
+                const responseData = JSON.parse(data);
+
+                if (responseData.status === 'success') {
+                    const orders = responseData.data.orders;
+                    res.render('admin/orders', { orders });
+                } else {
+                    res.status(responseData.statuscode).json(responseData);
+                }
             });
-        }).on('error', (error) => {
+        });
+
+        request.on('error', (error) => {
             next(error);
         });
+
+        request.end();
     } catch (error) {
         next(error);
     }
 });
+
 
 // Update order status route (admin only)
 router.put('/orders/:orderId', authenticateJWT, isAdmin, async (req, res, next) => {

@@ -3,11 +3,13 @@ const router = express.Router();
 const crypto = require('crypto');
 const db = require('../models');
 const UserService = require('../services/userService');
+const RoleService = require('../services/roleService');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 var jwt = require('jsonwebtoken');
 
 const userService = new UserService(db);
+const roleService = new RoleService(db);
 // POST /auth/login
 router.post('/login', jsonParser, async (req, res) => {
   const { email, password } = req.body;
@@ -156,7 +158,20 @@ router.post('/register', jsonParser, async (req, res) => {
       });
     });
 
-    const newUser = await userService.create(firstName, lastName, userName, email, hashedPassword, salt, address, telephoneNumber);
+    const roleId = await roleService.getRoleByName('User');
+
+    console.log('The role id is: ', roleId);
+
+    const newUser = await userService.create(
+      firstName,
+      lastName,
+      userName,
+      email,
+      hashedPassword,
+      salt,
+      address,
+      telephoneNumber,
+      roleId);
 
     res.status(201).json({ status: 'success', statuscode: 200, data: { result: 'User created successfully' } });
   } catch (error) {

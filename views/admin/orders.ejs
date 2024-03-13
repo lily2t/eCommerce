@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Orders</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
-
 <body>
     <h1>Admin Orders</h1>
     <table>
@@ -16,29 +27,17 @@
                 <th>Order ID</th>
                 <th>User ID</th>
                 <th>Status</th>
-                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <% orders.forEach(order => { %>
-            <tr>
-                <td><%= order.id %></td>
-                <td><%= order.UserId %></td>
-                <td><%= order.status %></td>
-                <td>
-                    <form method="POST" action="/admin/orders/<%= order.id %>?_method=PUT">
-                        <select name="status">
-                            <option value="In Progress">In Progress</option>
-                            <option value="Ordered">Ordered</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                        <button type="submit">Update</button>
-                    </form>
-                </td>
-            </tr>
+                <tr>
+                    <td><%= order.id %></td>
+                    <td><%= order.userId %></td>
+                    <td><%= order.status %></td>
+                </tr>
             <% }); %>
         </tbody>
     </table>
 </body>
-
 </html>

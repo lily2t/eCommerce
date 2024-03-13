@@ -3,7 +3,7 @@ class UserService {
         this.User = db.User;
     }
 
-    async create(firstName, lastName, userName, email, encryptedPassword, salt, address, telephoneNumber) {
+    async create(firstName, lastName, userName, email, encryptedPassword, salt, address, telephoneNumber, roleId) {
         return this.User.create({
             firstName,
             lastName,
@@ -12,7 +12,8 @@ class UserService {
             EncryptedPassword: encryptedPassword,
             salt,
             address,
-            telephoneNumber
+            telephoneNumber,
+            roleId
         });
     }
 

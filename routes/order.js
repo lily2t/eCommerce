@@ -31,4 +31,25 @@ router.put('/:orderId', jsonParser, async (req, res) => {
     }
 });
 
+router.post('/', jsonParser, async (req, res) => {
+    const { userId, orderNumber, membershipStatus, orderItems } = req.body;
+
+    try {
+        const order = await orderService.createOrder(userId, orderNumber, membershipStatus, orderItems);
+        res.status(201).json({
+            status: 'success',
+            statuscode: 201, data: {
+                result: 'Order created successfully', order
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status:
+                'error', statuscode: 500, data: {
+                    result: error.message
+                }
+        });
+    }
+});
 module.exports = router;
