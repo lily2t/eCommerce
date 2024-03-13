@@ -16,13 +16,21 @@ const isValidEmail = (email) => {
   return emailRegex.test(email);
 }
 
-
 // POST /auth/login
 router.post('/login', jsonParser, async (req, res) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "User login."
+     #swagger.parameters['body'] = {
+         in: "body",
+         description: "User credentials.",
+         required: true,
+         schema: {
+             $ref: "#/definitions/LoginRequest"
+         }
+     } */
   const { email, password } = req.body;
 
   try {
-
     if (!isValidEmail(email)) {
       return res.status(400).json({
         status: 'error',
@@ -83,10 +91,19 @@ router.post('/login', jsonParser, async (req, res) => {
 
 //login only for admin
 router.post('/admin/login', async (req, res) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "Admin login."
+     #swagger.parameters['body'] = {
+         in: "body",
+         description: "Admin credentials.",
+         required: true,
+         schema: {
+             $ref: "#/definitions/LoginRequest"
+         }
+     } */
   const { email, password } = req.body;
 
   try {
-
     if (!isValidEmail(email)) {
       return res.status(400).json({
         status: 'error',
@@ -126,7 +143,7 @@ router.post('/admin/login', async (req, res) => {
         });
     });
 
-    // Generate JWT token
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -153,6 +170,16 @@ router.post('/admin/login', async (req, res) => {
 
 // POST /auth/register
 router.post('/register', jsonParser, async (req, res) => {
+  /* #swagger.tags = ['Authentication']
+     #swagger.description = "Register a new user."
+     #swagger.parameters['body'] = {
+         in: "body",
+         description: "New user details.",
+         required: true,
+         schema: {
+             $ref: "#/definitions/RegisterRequest"
+         }
+     } */
   const { firstName, lastName, userName, email, password, address, telephoneNumber } = req.body;
 
   try {

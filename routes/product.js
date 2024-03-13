@@ -8,6 +8,16 @@ const jsonParser = express.json();
 const productService = new ProductService(db);
 
 router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Products']
+       #swagger.description = "Add a new product."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Product details to be added.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AddProductRequest"
+           }
+       } */
     const { name, description, unitPrice, discount, date_added, imgurl, quantity, BrandId, CategoryId } = req.body;
 
     try {
@@ -26,6 +36,8 @@ router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
+    /* #swagger.tags = ['Products']
+       #swagger.description = "Get all products." */
     try {
         const products = await productService.getAllProducts();
         res.json({
@@ -42,6 +54,22 @@ router.get('/', async (req, res) => {
 });
 
 router.put('/:productId', isAdmin, jsonParser, async (req, res) => {
+    /* #swagger.tags = ['Products']
+       #swagger.description = "Update product by ID."
+       #swagger.parameters['productId'] = {
+           "name": "productId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated product fields.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateProductRequest"
+           }
+       } */
     const productId = req.params.productId;
     const updatedFields = req.body;
 
@@ -61,6 +89,14 @@ router.put('/:productId', isAdmin, jsonParser, async (req, res) => {
 });
 
 router.delete('/:productId', isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Products']
+       #swagger.description = "Soft delete product by ID."
+       #swagger.parameters['productId'] = {
+           "name": "productId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       } */
     const productId = req.params.productId;
 
     try {

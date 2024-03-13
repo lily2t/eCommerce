@@ -5,7 +5,8 @@ const db = require('../models');
 const crypto = require('crypto');
 
 router.post('/init', async (req, res) => {
-
+    /* #swagger.tags = ['Initialization']
+       #swagger.description = "Initialize the database with default data." */
     try {
         // Check if database is already populated
         const productsCount = await db.Product.count();
@@ -32,7 +33,7 @@ router.post('/init', async (req, res) => {
             lastName: 'Support',
             address: 'Online',
             telephoneNumber: '911',
-            RoleId: 1 
+            RoleId: 1
         });
 
         // Populate membership table
@@ -86,6 +87,8 @@ router.post('/init', async (req, res) => {
 
 // POST /search
 router.post('/search', async (req, res) => {
+    /* #swagger.tags = ['Search']
+       #swagger.description = "Search for products based on search term, category, and brand." */
     const { searchTerm, category, brand } = req.body;
 
     try {

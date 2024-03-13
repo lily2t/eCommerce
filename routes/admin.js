@@ -5,11 +5,23 @@ const axios = require('axios');
 const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware.js');
 
 router.get('/', (req, res) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Render the login page for admin." */
     res.render('admin/login');
 });
 
 
 router.post('/login', async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Login as admin."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Admin credentials.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AdminLoginRequest"
+           }
+       } */
     try {
         const { username, password } = req.body;
 
@@ -68,6 +80,14 @@ router.post('/login', async (req, res, next) => {
 
 // Dashboard route
 router.get('/dashboard', authenticateJWT, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Render the admin dashboard."
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       } */
     try {
         const token = req.query.token;
         if (!token) {
@@ -84,6 +104,14 @@ router.get('/dashboard', authenticateJWT, async (req, res, next) => {
 
 
 router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Get all products for admin."
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       } */
     try {
         const token = req.query.token;
         if (!token) {
@@ -134,6 +162,22 @@ router.get('/products', authenticateJWT, isAdmin, async (req, res, next) => {
 
 
 router.post('/products', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Add a new product as admin."
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Product details to be added.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AddProductRequest"
+           }
+       } */
     try {
         const token = req.query.token;
 
@@ -187,6 +231,28 @@ router.post('/products', authenticateJWT, isAdmin, async (req, res, next) => {
 
 // Route to update a product
 router.put('/products/:productId', authenticateJWT, isAdmin, (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Update product by ID as admin."
+       #swagger.parameters['productId'] = {
+           "name": "productId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated product fields.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateProductRequest"
+           }
+       } */
     try {
         const productId = req.params.productId;
         const token = req.query.token;
@@ -240,6 +306,20 @@ router.put('/products/:productId', authenticateJWT, isAdmin, (req, res, next) =>
 
 // Route to delete a product (soft delete)
 router.delete('/products/:productId', authenticateJWT, isAdmin, (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Soft delete product by ID as admin."
+       #swagger.parameters['productId'] = {
+           "name": "productId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       } */
     try {
         const productId = req.params.productId;
         const token = req.query.token;
@@ -291,6 +371,14 @@ router.delete('/products/:productId', authenticateJWT, isAdmin, (req, res, next)
 
 // Brands route
 router.get('/brands', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Get all brands for admin."
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       } */
     try {
         const token = req.query.token;
         if (!token) {
@@ -342,6 +430,14 @@ router.get('/brands', authenticateJWT, isAdmin, async (req, res, next) => {
 
 // Categories route
 router.get('/categories', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Get all categories for admin."
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       } */
     try {
         const token = req.query.token;
         if (!token) {
@@ -393,6 +489,14 @@ router.get('/categories', authenticateJWT, isAdmin, async (req, res, next) => {
 
 // Orders route
 router.get('/orders', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Get all orders for admin."
+       #swagger.parameters['query'] = {
+           "name": "token",
+           "in": "query",
+           "required": true,
+           "type": "string"
+       } */
     try {
         const token = req.query.token;
         if (!token) {
@@ -444,6 +548,22 @@ router.get('/orders', authenticateJWT, isAdmin, async (req, res, next) => {
 
 // Update order status route (admin only)
 router.put('/orders/:orderId', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Update order status by ID as admin."
+       #swagger.parameters['orderId'] = {
+           "name": "orderId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated order status.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateOrderStatusRequest"
+           }
+       } */
     try {
         const orderId = req.params.orderId;
         const { status } = req.body;

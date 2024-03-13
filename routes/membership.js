@@ -8,6 +8,16 @@ const jsonParser = express.json();
 const membershipService = new MembershipService(db);
 
 router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Memberships']
+       #swagger.description = "Add a new membership."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Membership details to be added.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AddMembershipRequest"
+           }
+       } */
     const { name, discount_percentage, min_items, max_items } = req.body;
 
     try {
@@ -26,6 +36,8 @@ router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
+    /* #swagger.tags = ['Memberships']
+       #swagger.description = "Get all memberships." */
     try {
         const memberships = await membershipService.getAllMemberships();
         res.json({
@@ -42,6 +54,22 @@ router.get('/', async (req, res) => {
 });
 
 router.put('/:membershipId', authenticateJWT, isAdmin, jsonParser, async (req, res) => {
+    /* #swagger.tags = ['Memberships']
+       #swagger.description = "Update a membership by ID."
+       #swagger.parameters['membershipId'] = {
+           "name": "membershipId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated membership details.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateMembershipRequest"
+           }
+       } */
     const membershipId = req.params.membershipId;
     const updatedFields = req.body;
 
@@ -61,6 +89,14 @@ router.put('/:membershipId', authenticateJWT, isAdmin, jsonParser, async (req, r
 });
 
 router.delete('/:membershipId', authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Memberships']
+       #swagger.description = "Delete a membership by ID."
+       #swagger.parameters['membershipId'] = {
+           "name": "membershipId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       } */
     const membershipId = req.params.membershipId;
 
     try {

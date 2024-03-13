@@ -8,6 +8,16 @@ const jsonParser = express.json();
 const cartService = new CartService(db);
 
 router.post('/', jsonParser, authenticateJWT, isRegistered, async (req, res) => {
+    /* #swagger.tags = ['Cart']
+       #swagger.description = "Add a product to the cart."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Product details to be added to the cart.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AddToCartRequest"
+           }
+       } */
     const { userId, productId, quantity } = req.body;
 
     try {
@@ -26,6 +36,15 @@ router.post('/', jsonParser, authenticateJWT, isRegistered, async (req, res) => 
 });
 
 router.get('/', authenticateJWT, isRegistered, async (req, res) => {
+    /* #swagger.tags = ['Cart']
+       #swagger.description = "Get all cart items for a user."
+       #swagger.parameters['query'] = {
+           in: "query",
+           name: "userId",
+           description: "User ID for which to fetch cart items.",
+           required: true,
+           type: "integer"
+       } */
     const userId = req.query.userId;
 
     try {
@@ -44,6 +63,22 @@ router.get('/', authenticateJWT, isRegistered, async (req, res) => {
 });
 
 router.put('/:cartItemId', authenticateJWT, isRegistered, jsonParser, async (req, res) => {
+    /* #swagger.tags = ['Cart']
+       #swagger.description = "Update a cart item by ID."
+       #swagger.parameters['cartItemId'] = {
+           "name": "cartItemId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated cart item details.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateCartItemRequest"
+           }
+       } */
     const cartItemId = req.params.cartItemId;
     const { quantity } = req.body;
 
@@ -63,6 +98,14 @@ router.put('/:cartItemId', authenticateJWT, isRegistered, jsonParser, async (req
 });
 
 router.delete('/:cartItemId', authenticateJWT, isRegistered, async (req, res) => {
+    /* #swagger.tags = ['Cart']
+       #swagger.description = "Delete a cart item by ID."
+       #swagger.parameters['cartItemId'] = {
+           "name": "cartItemId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       } */
     const cartItemId = req.params.cartItemId;
 
     try {

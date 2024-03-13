@@ -8,6 +8,16 @@ const jsonParser = express.json();
 const categoryService = new CategoryService(db);
 
 router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Categories']
+       #swagger.description = "Add a new category."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Category details to be added.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AddCategoryRequest"
+           }
+       } */
     const { name } = req.body;
 
     try {
@@ -30,6 +40,8 @@ router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
+    /* #swagger.tags = ['Categories']
+       #swagger.description = "Get all categories." */
     try {
         const categories = await categoryService.getAllCategories();
         res.json({
@@ -50,6 +62,22 @@ router.get('/', async (req, res) => {
 });
 
 router.put('/:categoryId', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Categories']
+       #swagger.description = "Update a category by ID."
+       #swagger.parameters['categoryId'] = {
+           "name": "categoryId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated category details.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateCategoryRequest"
+           }
+       } */
     const categoryId = req.params.categoryId;
     const updatedFields = req.body;
 
@@ -73,6 +101,14 @@ router.put('/:categoryId', jsonParser, authenticateJWT, isAdmin, async (req, res
 });
 
 router.delete('/:categoryId', authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Categories']
+       #swagger.description = "Delete a category by ID."
+       #swagger.parameters['categoryId'] = {
+           "name": "categoryId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       } */
     const categoryId = req.params.categoryId;
 
     try {

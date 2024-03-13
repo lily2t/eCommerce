@@ -8,6 +8,14 @@ const jsonParser = express.json();
 const orderService = new OrderService(db);
 
 router.get('/', authenticateJWT, isRegistered, async (req, res) => {
+    /* #swagger.tags = ['Orders']
+       #swagger.description = "Get all orders."
+       #swagger.parameters['userId'] = {
+           "name": "userId",
+           "in": "query",
+           "required": true,
+           "type": "integer"
+       } */
     const userId = req.query.userId;
 
     try {
@@ -20,6 +28,22 @@ router.get('/', authenticateJWT, isRegistered, async (req, res) => {
 });
 
 router.put('/:orderId', authenticateJWT, isAdmin, jsonParser, async (req, res) => {
+    /* #swagger.tags = ['Orders']
+       #swagger.description = "Update order status by ID."
+       #swagger.parameters['orderId'] = {
+           "name": "orderId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated order status.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateOrderStatusRequest"
+           }
+       } */
     const orderId = req.params.orderId;
     const { status } = req.body;
 
@@ -33,6 +57,16 @@ router.put('/:orderId', authenticateJWT, isAdmin, jsonParser, async (req, res) =
 });
 
 router.post('/', authenticateJWT, isRegistered, jsonParser, async (req, res) => {
+    /* #swagger.tags = ['Orders']
+       #swagger.description = "Create a new order."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Order details to be added.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/CreateOrderRequest"
+           }
+       } */
     const { userId, orderNumber, membershipStatus, orderItems } = req.body;
 
     try {

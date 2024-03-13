@@ -13,21 +13,18 @@
   "paths": {
     "/auth/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "User login.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "User credentials.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/LoginRequest"
             }
           }
         ],
@@ -49,21 +46,18 @@
     },
     "/auth/admin/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Admin login.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "Admin credentials.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/LoginRequest"
             }
           }
         ],
@@ -88,36 +82,18 @@
     },
     "/auth/register": {
       "post": {
-        "description": "",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Register a new user.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "New user details.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "firstName": {
-                  "example": "any"
-                },
-                "lastName": {
-                  "example": "any"
-                },
-                "userName": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "address": {
-                  "example": "any"
-                },
-                "telephoneNumber": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/RegisterRequest"
             }
           }
         ],
@@ -136,7 +112,10 @@
     },
     "/products/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Products"
+        ],
+        "description": "Add a new product.",
         "parameters": [
           {
             "name": "authorization",
@@ -151,37 +130,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Product details to be added.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "description": {
-                  "example": "any"
-                },
-                "unitPrice": {
-                  "example": "any"
-                },
-                "discount": {
-                  "example": "any"
-                },
-                "date_added": {
-                  "example": "any"
-                },
-                "imgurl": {
-                  "example": "any"
-                },
-                "quantity": {
-                  "example": "any"
-                },
-                "BrandId": {
-                  "example": "any"
-                },
-                "CategoryId": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/AddProductRequest"
             }
           }
         ],
@@ -201,7 +153,10 @@
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Products"
+        ],
+        "description": "Get all products.",
         "responses": {
           "200": {
             "description": "OK"
@@ -214,13 +169,25 @@
     },
     "/products/{productId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Products"
+        ],
+        "description": "Update product by ID.",
         "parameters": [
           {
             "name": "productId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated product fields.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateProductRequest"
+            }
           }
         ],
         "responses": {
@@ -236,13 +203,16 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Products"
+        ],
+        "description": "Soft delete product by ID.",
         "parameters": [
           {
             "name": "productId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -260,7 +230,10 @@
     },
     "/categories/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Add a new category.",
         "parameters": [
           {
             "name": "authorization",
@@ -275,13 +248,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Category details to be added.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/AddCategoryRequest"
             }
           }
         ],
@@ -301,7 +271,10 @@
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Get all categories.",
         "responses": {
           "200": {
             "description": "OK"
@@ -314,13 +287,16 @@
     },
     "/categories/{categoryId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Update a category by ID.",
         "parameters": [
           {
             "name": "categoryId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -331,6 +307,15 @@
             "name": "token",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated category details.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateCategoryRequest"
+            }
           }
         ],
         "responses": {
@@ -349,13 +334,16 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Categories"
+        ],
+        "description": "Delete a category by ID.",
         "parameters": [
           {
             "name": "categoryId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -386,7 +374,10 @@
     },
     "/brands/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Brands"
+        ],
+        "description": "Add a new brand.",
         "parameters": [
           {
             "name": "authorization",
@@ -401,13 +392,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Brand details.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/AddBrandRequest"
             }
           }
         ],
@@ -427,7 +415,10 @@
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Brands"
+        ],
+        "description": "Get all brands.",
         "responses": {
           "200": {
             "description": "OK"
@@ -440,13 +431,16 @@
     },
     "/brands/{brandId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Brands"
+        ],
+        "description": "Update a brand by ID.",
         "parameters": [
           {
             "name": "brandId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -457,6 +451,15 @@
             "name": "token",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated brand details.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateBrandRequest"
+            }
           }
         ],
         "responses": {
@@ -475,13 +478,16 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Brands"
+        ],
+        "description": "Delete a brand by ID.",
         "parameters": [
           {
             "name": "brandId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -512,7 +518,10 @@
     },
     "/membership/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Memberships"
+        ],
+        "description": "Add a new membership.",
         "parameters": [
           {
             "name": "authorization",
@@ -527,22 +536,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Membership details to be added.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "example": "any"
-                },
-                "discount_percentage": {
-                  "example": "any"
-                },
-                "min_items": {
-                  "example": "any"
-                },
-                "max_items": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/AddMembershipRequest"
             }
           }
         ],
@@ -562,7 +559,10 @@
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Memberships"
+        ],
+        "description": "Get all memberships.",
         "responses": {
           "200": {
             "description": "OK"
@@ -575,13 +575,16 @@
     },
     "/membership/{membershipId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Memberships"
+        ],
+        "description": "Update a membership by ID.",
         "parameters": [
           {
             "name": "membershipId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -592,6 +595,15 @@
             "name": "token",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated membership details.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateMembershipRequest"
+            }
           }
         ],
         "responses": {
@@ -610,13 +622,16 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Memberships"
+        ],
+        "description": "Delete a membership by ID.",
         "parameters": [
           {
             "name": "membershipId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -647,13 +662,11 @@
     },
     "/orders/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Orders"
+        ],
+        "description": "Get all orders.",
         "parameters": [
-          {
-            "name": "userId",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "authorization",
             "in": "header",
@@ -663,6 +676,12 @@
             "name": "token",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "type": "integer"
           }
         ],
         "responses": {
@@ -681,7 +700,10 @@
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Orders"
+        ],
+        "description": "Create a new order.",
         "parameters": [
           {
             "name": "authorization",
@@ -696,22 +718,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Order details to be added.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                },
-                "orderNumber": {
-                  "example": "any"
-                },
-                "membershipStatus": {
-                  "example": "any"
-                },
-                "orderItems": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/CreateOrderRequest"
             }
           }
         ],
@@ -733,13 +743,16 @@
     },
     "/orders/{orderId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Orders"
+        ],
+        "description": "Update order status by ID.",
         "parameters": [
           {
             "name": "orderId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -754,13 +767,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Updated order status.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/UpdateOrderStatusRequest"
             }
           }
         ],
@@ -782,7 +792,10 @@
     },
     "/cart/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Cart"
+        ],
+        "description": "Add a product to the cart.",
         "parameters": [
           {
             "name": "authorization",
@@ -797,19 +810,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Product details to be added to the cart.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                },
-                "productId": {
-                  "example": "any"
-                },
-                "quantity": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/AddToCartRequest"
             }
           }
         ],
@@ -829,12 +833,17 @@
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Cart"
+        ],
+        "description": "Get all cart items for a user.",
         "parameters": [
           {
             "name": "userId",
             "in": "query",
-            "type": "string"
+            "description": "User ID for which to fetch cart items.",
+            "required": true,
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -865,13 +874,16 @@
     },
     "/cart/{cartItemId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Cart"
+        ],
+        "description": "Update a cart item by ID.",
         "parameters": [
           {
             "name": "cartItemId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -886,13 +898,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Updated cart item details.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "quantity": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/UpdateCartItemRequest"
             }
           }
         ],
@@ -912,13 +921,16 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Cart"
+        ],
+        "description": "Delete a cart item by ID.",
         "parameters": [
           {
             "name": "cartItemId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -949,7 +961,10 @@
     },
     "/utility/init": {
       "post": {
-        "description": "",
+        "tags": [
+          "Initialization"
+        ],
+        "description": "Initialize the database with default data.",
         "responses": {
           "200": {
             "description": "OK"
@@ -965,7 +980,10 @@
     },
     "/utility/search": {
       "post": {
-        "description": "",
+        "tags": [
+          "Search"
+        ],
+        "description": "Search for products based on search term, category, and brand.",
         "parameters": [
           {
             "name": "body",
@@ -998,7 +1016,10 @@
     },
     "/admin/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Render the login page for admin.",
         "responses": {
           "default": {
             "description": ""
@@ -1008,21 +1029,18 @@
     },
     "/admin/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Login as admin.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "Admin credentials.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/AdminLoginRequest"
             }
           }
         ],
@@ -1035,11 +1053,15 @@
     },
     "/admin/dashboard": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Render the admin dashboard.",
         "parameters": [
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
@@ -1066,11 +1088,15 @@
     },
     "/admin/products": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Get all products for admin.",
         "parameters": [
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
@@ -1095,17 +1121,30 @@
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Add a new product as admin.",
         "parameters": [
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Product details to be added.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddProductRequest"
+            }
           }
         ],
         "responses": {
@@ -1129,23 +1168,36 @@
     },
     "/admin/products/{productId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Update product by ID as admin.",
         "parameters": [
           {
             "name": "productId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated product fields.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateProductRequest"
+            }
           }
         ],
         "responses": {
@@ -1167,17 +1219,21 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Soft delete product by ID as admin.",
         "parameters": [
           {
             "name": "productId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
@@ -1207,11 +1263,15 @@
     },
     "/admin/brands": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Get all brands for admin.",
         "parameters": [
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
@@ -1238,11 +1298,15 @@
     },
     "/admin/categories": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Get all categories for admin.",
         "parameters": [
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
@@ -1269,11 +1333,15 @@
     },
     "/admin/orders": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Get all orders for admin.",
         "parameters": [
           {
             "name": "token",
             "in": "query",
+            "required": true,
             "type": "string"
           },
           {
@@ -1300,13 +1368,16 @@
     },
     "/admin/orders/{orderId}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Update order status by ID as admin.",
         "parameters": [
           {
             "name": "orderId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "authorization",
@@ -1321,13 +1392,10 @@
           {
             "name": "body",
             "in": "body",
+            "description": "Updated order status.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/UpdateOrderStatusRequest"
             }
           }
         ],

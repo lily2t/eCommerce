@@ -8,6 +8,16 @@ const jsonParser = express.json();
 const brandService = new BrandService(db);
 
 router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Brands']
+       #swagger.description = "Add a new brand."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Brand details.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AddBrandRequest"
+           }
+       } */
     const { name } = req.body;
 
     try {
@@ -26,6 +36,8 @@ router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
+    /* #swagger.tags = ['Brands']
+       #swagger.description = "Get all brands." */
     try {
         const brands = await brandService.getAllBrands();
         res.json({
@@ -42,6 +54,22 @@ router.get('/', async (req, res) => {
 });
 
 router.put('/:brandId', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Brands']
+       #swagger.description = "Update a brand by ID."
+       #swagger.parameters['brandId'] = {
+           "name": "brandId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       }
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Updated brand details.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/UpdateBrandRequest"
+           }
+       } */
     const brandId = req.params.brandId;
     const updatedFields = req.body;
 
@@ -61,6 +89,14 @@ router.put('/:brandId', jsonParser, authenticateJWT, isAdmin, async (req, res) =
 });
 
 router.delete('/:brandId', authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Brands']
+       #swagger.description = "Delete a brand by ID."
+       #swagger.parameters['brandId'] = {
+           "name": "brandId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       } */
     const brandId = req.params.brandId;
 
     try {
