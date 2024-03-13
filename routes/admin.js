@@ -186,25 +186,104 @@ router.post('/products', authenticateJWT, isAdmin, async (req, res, next) => {
 
 
 // Route to update a product
-router.put('/products/:productId', authenticateJWT, isAdmin, async (req, res, next) => {
+router.put('/products/:productId', authenticateJWT, isAdmin, (req, res, next) => {
     try {
-        http.put(`http://localhost:3000/admin/products/${req.params.productId}`, req.body, { headers: { Authorization: req.headers.authorization } }, (response) => {
-        }).on('error', (error) => {
+        const productId = req.params.productId;
+        const token = req.query.token;
+
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: `/products/${productId}`,
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        };
+
+        const request = http.request(options, (response) => {
+            let data = '';
+
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                const responseData = JSON.parse(data);
+
+                if (response.statusCode === 200) {
+                    res.json(responseData);
+                } else {
+                    res.status(response.statusCode).json(responseData);
+                }
+            });
+        });
+
+        request.on('error', (error) => {
             next(error);
         });
+
+        request.write(JSON.stringify(req.body));
+        request.end();
     } catch (error) {
         next(error);
     }
 });
 
 // Route to delete a product (soft delete)
-router.delete('/products/:productId', authenticateJWT, isAdmin, async (req, res, next) => {
+router.delete('/products/:productId', authenticateJWT, isAdmin, (req, res, next) => {
     try {
-        http.delete(`http://localhost:3000/admin/products/${req.params.productId}`, { headers: { Authorization: req.headers.authorization } }, (response) => {
+        const productId = req.params.productId;
+        const token = req.query.token;
 
-        }).on('error', (error) => {
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: `/products/${productId}`,
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+
+        const request = http.request(options, (response) => {
+            let data = '';
+
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                const responseData = JSON.parse(data);
+
+                if (response.statusCode === 200) {
+                    res.json(responseData);
+                } else {
+                    res.status(response.statusCode).json(responseData);
+                }
+            });
+        });
+
+        request.on('error', (error) => {
             next(error);
         });
+
+        request.end();
     } catch (error) {
         next(error);
     }

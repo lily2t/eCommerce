@@ -10,11 +10,27 @@ var jwt = require('jsonwebtoken');
 
 const userService = new UserService(db);
 const roleService = new RoleService(db);
+
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+
 // POST /auth/login
 router.post('/login', jsonParser, async (req, res) => {
   const { email, password } = req.body;
 
   try {
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        status: 'error',
+        statuscode: 400,
+        data: { result: 'Invalid email format' }
+      });
+    }
+
     const user = await userService.getByEmail(email);
     if (!user) {
       return res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'User not found' } });
@@ -68,9 +84,17 @@ router.post('/login', jsonParser, async (req, res) => {
 //login only for admin
 router.post('/admin/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('The user is from auth router: ', req.body);
 
   try {
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        status: 'error',
+        statuscode: 400,
+        data: { result: 'Invalid email format' }
+      });
+    }
+
     const user = await userService.getByEmail(email);
     if (!user) {
       return res.status(404).json({
@@ -136,6 +160,14 @@ router.post('/register', jsonParser, async (req, res) => {
       return res.status(400).json({
         status: 'error',
         statuscode: 400, data: { result: 'All fields are required' }
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        status: 'error',
+        statuscode: 400,
+        data: { result: 'Invalid email format' }
       });
     }
 

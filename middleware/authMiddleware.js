@@ -81,5 +81,33 @@ const isAdmin = async (req, res, next) => {
     }
 };
 
+const isRegistered = async (req, res, next) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(403).json({
+                status: 'error',
+                message: 'User ID not found in request.'
+            });
+        }
 
-module.exports = { authenticateJWT, isAdmin };
+        const user = await User.findByPk(req.user.id);
+
+        if (user && user.RoleId === 2) {
+            next();
+        } else {
+            return res.status(403).json({
+                status: 'error',
+                message: 'Unauthorized access. User is not registered.'
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error.'
+        });
+    }
+};
+
+module.exports = { authenticateJWT, isAdmin, isRegistered };
+

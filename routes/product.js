@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const ProductService = require('../services/productService');
+const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware.js');
 const jsonParser = express.json();
 
 const productService = new ProductService(db);
 
-router.post('/', jsonParser, async (req, res) => {
+router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
     const { name, description, unitPrice, discount, date_added, imgurl, quantity, BrandId, CategoryId } = req.body;
 
     try {
@@ -40,7 +41,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/:productId', jsonParser, async (req, res) => {
+router.put('/:productId', isAdmin, jsonParser, async (req, res) => {
     const productId = req.params.productId;
     const updatedFields = req.body;
 
@@ -59,7 +60,7 @@ router.put('/:productId', jsonParser, async (req, res) => {
     }
 });
 
-router.delete('/:productId', async (req, res) => {
+router.delete('/:productId', isAdmin, async (req, res) => {
     const productId = req.params.productId;
 
     try {

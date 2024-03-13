@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const OrderService = require('../services/orderService');
+const { authenticateJWT, isRegistered, isAdmin } = require('../middleware/authMiddleware.js');
 const jsonParser = express.json();
 
 const orderService = new OrderService(db);
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateJWT, isRegistered, async (req, res) => {
     const userId = req.query.userId;
 
     try {
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/:orderId', jsonParser, async (req, res) => {
+router.put('/:orderId', authenticateJWT, isAdmin, jsonParser, async (req, res) => {
     const orderId = req.params.orderId;
     const { status } = req.body;
 
@@ -31,7 +32,7 @@ router.put('/:orderId', jsonParser, async (req, res) => {
     }
 });
 
-router.post('/', jsonParser, async (req, res) => {
+router.post('/', authenticateJWT, isRegistered, jsonParser, async (req, res) => {
     const { userId, orderNumber, membershipStatus, orderItems } = req.body;
 
     try {

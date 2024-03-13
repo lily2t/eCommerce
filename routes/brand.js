@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const BrandService = require('../services/brandService');
+const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware.js');
 const jsonParser = express.json();
 
 const brandService = new BrandService(db);
 
-router.post('/', jsonParser, async (req, res) => {
+router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
     const { name } = req.body;
 
     try {
@@ -40,7 +41,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/:brandId', jsonParser, async (req, res) => {
+router.put('/:brandId', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
     const brandId = req.params.brandId;
     const updatedFields = req.body;
 
@@ -59,7 +60,7 @@ router.put('/:brandId', jsonParser, async (req, res) => {
     }
 });
 
-router.delete('/:brandId', async (req, res) => {
+router.delete('/:brandId', authenticateJWT, isAdmin, async (req, res) => {
     const brandId = req.params.brandId;
 
     try {

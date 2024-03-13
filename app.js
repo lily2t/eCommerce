@@ -3,6 +3,9 @@ var jwt = require('jsonwebtoken')
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const swaggerUi = require('swagger-ui-express')
+const swaggerFile = require('./swagger-output.json')
+const bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
@@ -42,6 +45,8 @@ app.use('/cart', cartRouter);
 app.use('/utility', utilityRouter);
 app.use('/admin', adminRouter);
 
+app.use(bodyParser.json())
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

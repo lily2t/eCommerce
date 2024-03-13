@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const MembershipService = require('../services/membershipService');
+const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware.js');
 const jsonParser = express.json();
 
 const membershipService = new MembershipService(db);
 
-router.post('/', jsonParser, async (req, res) => {
+router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
     const { name, discount_percentage, min_items, max_items } = req.body;
 
     try {
@@ -40,7 +41,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/:membershipId', jsonParser, async (req, res) => {
+router.put('/:membershipId', authenticateJWT, isAdmin, jsonParser, async (req, res) => {
     const membershipId = req.params.membershipId;
     const updatedFields = req.body;
 
@@ -59,7 +60,7 @@ router.put('/:membershipId', jsonParser, async (req, res) => {
     }
 });
 
-router.delete('/:membershipId', async (req, res) => {
+router.delete('/:membershipId', authenticateJWT, isAdmin, async (req, res) => {
     const membershipId = req.params.membershipId;
 
     try {

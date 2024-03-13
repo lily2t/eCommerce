@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const CartService = require('../services/cartService');
+const { authenticateJWT, isRegistered } = require('../middleware/authMiddleware.js');
 const jsonParser = express.json();
 
 const cartService = new CartService(db);
 
-router.post('/', jsonParser, async (req, res) => {
+router.post('/', jsonParser, authenticateJWT, isRegistered, async (req, res) => {
     const { userId, productId, quantity } = req.body;
 
     try {
@@ -24,7 +25,7 @@ router.post('/', jsonParser, async (req, res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateJWT, isRegistered, async (req, res) => {
     const userId = req.query.userId;
 
     try {
@@ -42,7 +43,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/:cartItemId', jsonParser, async (req, res) => {
+router.put('/:cartItemId', authenticateJWT, isRegistered, jsonParser, async (req, res) => {
     const cartItemId = req.params.cartItemId;
     const { quantity } = req.body;
 
@@ -61,7 +62,7 @@ router.put('/:cartItemId', jsonParser, async (req, res) => {
     }
 });
 
-router.delete('/:cartItemId', async (req, res) => {
+router.delete('/:cartItemId', authenticateJWT, isRegistered, async (req, res) => {
     const cartItemId = req.params.cartItemId;
 
     try {

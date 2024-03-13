@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const CategoryService = require('../services/categoryService');
+const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware.js');
 const jsonParser = express.json();
 
 const categoryService = new CategoryService(db);
 
-router.post('/', jsonParser, async (req, res) => {
+router.post('/', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
     const { name } = req.body;
 
     try {
@@ -48,7 +49,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/:categoryId', jsonParser, async (req, res) => {
+router.put('/:categoryId', jsonParser, authenticateJWT, isAdmin, async (req, res) => {
     const categoryId = req.params.categoryId;
     const updatedFields = req.body;
 
@@ -71,7 +72,7 @@ router.put('/:categoryId', jsonParser, async (req, res) => {
     }
 });
 
-router.delete('/:categoryId', async (req, res) => {
+router.delete('/:categoryId', authenticateJWT, isAdmin, async (req, res) => {
     const categoryId = req.params.categoryId;
 
     try {

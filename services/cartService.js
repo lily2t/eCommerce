@@ -11,7 +11,7 @@ class CartService {
         }
 
         if (product.quantity < quantity) {
-            throw new Error("Product quantity not enough");
+            throw new Error("Product is out of stock.");
         }
 
         let cartItem = await this.Cart.findOne({ where: { UserId: userId, ProductId: productId } });
