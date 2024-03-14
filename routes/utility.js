@@ -25,9 +25,11 @@ router.post('/init', async (req, res) => {
 
         // Create initial Admin user
         const hashedPassword = await hashPassword('P@ssword2023');
+        const salt = crypto.randomBytes(16).toString('hex');
         await db.User.create({
             userName: 'Admin',
             EncryptedPassword: hashedPassword,
+            Salt: salt,
             email: 'admin@noroff.no',
             firstName: 'Admin',
             lastName: 'Support',

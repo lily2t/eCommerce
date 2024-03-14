@@ -4,16 +4,17 @@ class UserService {
     }
 
     async create(firstName, lastName, userName, email, encryptedPassword, salt, address, telephoneNumber, roleId) {
+        console.log('Role ID we received to userservice:', roleId);
         return this.User.create({
             firstName,
             lastName,
             userName,
             email,
             EncryptedPassword: encryptedPassword,
-            salt,
+            Salt: salt,
             address,
             telephoneNumber,
-            roleId
+            RoleId: roleId
         });
     }
 

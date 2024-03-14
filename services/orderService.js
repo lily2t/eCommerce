@@ -41,6 +41,16 @@ class OrderService {
 
         return order;
     }
+
+    async deleteOrder(orderId) {
+        const order = await this.Order.findByPk(orderId);
+        if (!order) {
+            throw new Error("Order not found");
+        }
+
+        await order.destroy();
+        return order;
+    }
 }
 
 module.exports = OrderService;

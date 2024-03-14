@@ -42,7 +42,9 @@ router.get('/', async (req, res) => {
         const products = await productService.getAllProducts();
         res.json({
             status: 'success',
-            statuscode: 200, data: { result: 'Products found', products }
+            statuscode: 200, data: {
+                result: 'Products found', products
+            }
         });
     } catch (error) {
         console.error(error);
@@ -53,7 +55,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/:productId', isAdmin, jsonParser, async (req, res) => {
+router.put('/:productId', authenticateJWT, isAdmin, jsonParser, async (req, res) => {
     /* #swagger.tags = ['Products']
        #swagger.description = "Update product by ID."
        #swagger.parameters['productId'] = {
@@ -88,7 +90,7 @@ router.put('/:productId', isAdmin, jsonParser, async (req, res) => {
     }
 });
 
-router.delete('/:productId', isAdmin, async (req, res) => {
+router.delete('/:productId', authenticateJWT, isAdmin, async (req, res) => {
     /* #swagger.tags = ['Products']
        #swagger.description = "Soft delete product by ID."
        #swagger.parameters['productId'] = {

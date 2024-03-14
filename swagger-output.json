@@ -181,6 +181,16 @@
             "type": "integer"
           },
           {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "description": "Updated product fields.",
@@ -193,6 +203,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -213,11 +226,24 @@
             "in": "path",
             "required": true,
             "type": "integer"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -783,6 +809,47 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Orders"
+        ],
+        "description": "Delete order by ID.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1411,6 +1478,864 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "LoginRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "john.doe@example.com"
+                }
+              }
+            },
+            "password": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "abc123"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "RegisterRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "John"
+                }
+              }
+            },
+            "lastName": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Doe"
+                }
+              }
+            },
+            "userName": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "johndoe"
+                }
+              }
+            },
+            "email": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "john.doe@example.com"
+                }
+              }
+            },
+            "password": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "abc123"
+                }
+              }
+            },
+            "address": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "123 Main St"
+                }
+              }
+            },
+            "telephoneNumber": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "123-456-7890"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AddBrandRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "samsung"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "UpdateBrandRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Updated Brand Name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AddToCartRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "productId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "quantity": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "UpdateCartItemRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "quantity": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 2
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AddCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Phones"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "UpdateCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Updated Category Name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AddMembershipRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Bronze"
+                }
+              }
+            },
+            "discount_percentage": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 10
+                }
+              }
+            },
+            "min_items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "max_items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 5
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "UpdateMembershipRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Silver"
+                }
+              }
+            },
+            "discount_percentage": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 20
+                }
+              }
+            },
+            "min_items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 2
+                }
+              }
+            },
+            "max_items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 10
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "UpdateOrderStatusRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Updated Status"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "CreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "orderNumber": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "ABC123"
+                }
+              }
+            },
+            "membershipStatus": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Active"
+                }
+              }
+            },
+            "orderItems": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "productId": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "number"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 2
+                            }
+                          }
+                        },
+                        "quantity": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "number"
+                            },
+                            "example": {
+                              "type": "number",
+                              "example": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AddProductRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Product Name"
+                }
+              }
+            },
+            "description": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Product Description"
+                }
+              }
+            },
+            "unitPrice": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 10
+                }
+              }
+            },
+            "discount": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 0
+                }
+              }
+            },
+            "date_added": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "2024-03-14"
+                }
+              }
+            },
+            "imgurl": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "http://example.com/image.jpg"
+                }
+              }
+            },
+            "quantity": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 100
+                }
+              }
+            },
+            "BrandId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            },
+            "CategoryId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "UpdateProductRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Updated Product Name"
+                }
+              }
+            },
+            "description": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "Updated Product Description"
+                }
+              }
+            },
+            "unitPrice": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 12
+                }
+              }
+            },
+            "discount": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 0.1
+                }
+              }
+            },
+            "date_added": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "2024-03-15"
+                }
+              }
+            },
+            "imgurl": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "example": {
+                  "type": "string",
+                  "example": "http://example.com/updated-image.jpg"
+                }
+              }
+            },
+            "quantity": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 90
+                }
+              }
+            },
+            "BrandId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 2
+                }
+              }
+            },
+            "CategoryId": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "example": {
+                  "type": "number",
+                  "example": 2
+                }
+              }
+            }
           }
         }
       }

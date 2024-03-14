@@ -87,4 +87,29 @@ router.post('/', authenticateJWT, isRegistered, jsonParser, async (req, res) => 
         });
     }
 });
+
+router.delete('/:orderId', authenticateJWT, isAdmin, async (req, res) => {
+    /* #swagger.tags = ['Orders']
+       #swagger.description = "Delete order by ID."
+       #swagger.parameters['orderId'] = {
+           "name": "orderId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       } */
+    const orderId = req.params.orderId;
+
+    try {
+        const deletedOrder = await orderService.deleteOrder(orderId);
+        if (deletedOrder) {
+            res.json({ status: 'success', statuscode: 200, data: { result: 'Order deleted successfully', order: deletedOrder } });
+        } else {
+            res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'Order not found' } });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', statuscode: 500, data: { result: error.message } });
+    }
+});
+
 module.exports = router;

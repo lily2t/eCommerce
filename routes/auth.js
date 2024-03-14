@@ -219,8 +219,6 @@ router.post('/register', jsonParser, async (req, res) => {
 
     const roleId = await roleService.getRoleByName('User');
 
-    console.log('The role id is: ', roleId);
-
     const newUser = await userService.create(
       firstName,
       lastName,
