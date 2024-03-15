@@ -9,7 +9,11 @@ class OrderService {
 
     async getAllOrders(userId) {
         if (userId) {
-            return this.Order.findAll({ where: { UserId: userId } });
+            return this.Order.findAll({
+                where: {
+                    UserId: userId
+                }
+            });
         } else {
             return this.Order.findAll();
         }
@@ -33,8 +37,10 @@ class OrderService {
             membershipStatus: membershipStatus
         });
 
-        const totalItemsPurchased = orderItems.reduce((acc, item) => acc + item.quantity, 0);
-        await this.MembershipService.updateMembershipStatus(userId, totalItemsPurchased);
+        const totalItemsPurchased = orderItems
+            .reduce((acc, item) => acc + item.quantity, 0);
+        await this.MembershipService
+            .updateMembershipStatus(userId, totalItemsPurchased);
 
         for (const orderItem of orderItems) {
             await this.OrderItem.create({

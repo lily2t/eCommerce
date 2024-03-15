@@ -17,6 +17,38 @@
         th {
             background-color: #f2f2f2;
         }
+        .add-brand-form {
+            margin-top: 20px;
+        }
+        .add-brand-form input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        .add-brand-form input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-brand-form input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -26,6 +58,7 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -33,9 +66,20 @@
                 <tr>
                     <td><%= brand.id %></td>
                     <td><%= brand.name %></td>
+                    <td>
+                        <form action="/admin/brands/<%= brand.id %>" method="POST">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>                        
+                    </td>
                 </tr>
             <% }); %>
         </tbody>
     </table>
+
+    <form class="add-brand-form" action="/admin/brands" method="POST">
+        <input type="text" name="name" placeholder="Enter brand name">
+        <input type="submit" value="Add Brand">
+    </form>
 </body>
 </html>

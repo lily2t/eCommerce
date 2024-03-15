@@ -35,9 +35,10 @@ describe('API Tests', () => {
         const response = await request(URL)
             .get('/categories');
         expect(response.statusCode).toBe(200);
-        expect(response.body.data.result)
+        expect(response.body.data.categories.map(category => category.name))
             .toEqual(expect.arrayContaining(['TEST_CATEGORY']));
     });
+
 
     test('PUT /categories/:categoryId - Update category', async () => {
         const updatedCategory = { name: 'UPDATED_CATEGORY' };
@@ -85,9 +86,11 @@ describe('API Tests', () => {
         const response = await request(URL)
             .get('/products');
         expect(response.statusCode).toBe(200);
-        expect(response.body.data.result)
+        expect(response.body.data.products.map(product => product.name)) 
             .toEqual(expect.arrayContaining(['TEST_PRODUCT']));
     });
+
+
 
     test('PUT /products/:productId - Update product', async () => {
         const updatedProduct = { name: 'UPDATED_PRODUCT' };

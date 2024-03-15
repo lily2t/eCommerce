@@ -1,8 +1,9 @@
 const express = require('express');
 const http = require('http');
 const router = express.Router();
-const axios = require('axios');
+// const axios = require('axios');
 const { authenticateJWT, isAdmin } = require('../middleware/authMiddleware.js');
+var jwt = require('jsonwebtoken');
 
 router.get('/', (req, res) => {
     /* #swagger.tags = ['Admin']
@@ -180,6 +181,7 @@ router.post('/products', authenticateJWT, isAdmin, async (req, res, next) => {
        } */
     try {
         const token = req.query.token;
+        console.log('The token is: ', token);
 
         if (!token) {
             return res.status(400).json({
@@ -191,7 +193,7 @@ router.post('/products', authenticateJWT, isAdmin, async (req, res, next) => {
         const options = {
             hostname: 'localhost',
             port: 3000,
-            path: '/admin/products',
+            path: '/products',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -427,6 +429,127 @@ router.get('/brands', authenticateJWT, isAdmin, async (req, res, next) => {
     }
 });
 
+//Add brand route
+router.post('/brands', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Add a new brand."
+       #swagger.parameters['body'] = {
+           in: "body",
+           description: "Brand details.",
+           required: true,
+           schema: {
+               $ref: "#/definitions/AddBrandRequest"
+           }
+       } */
+    try {
+        const token = req.query.token;
+        const { name } = req.body;
+
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: '/brands',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        };
+
+        const request = http.request(options, (response) => {
+            let data = '';
+
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                const responseData = JSON.parse(data);
+
+                if (response.statusCode === 201) {
+                    res.json(responseData);
+                } else {
+                    res.status(response.statusCode).json(responseData);
+                }
+            });
+        });
+
+        request.on('error', (error) => {
+            next(error);
+        });
+
+        request.write(JSON.stringify({ name }));
+        request.end();
+    } catch (error) {
+        next(error);
+    }
+});
+
+//delete a brand
+router.delete('/brands/:brandId', authenticateJWT, isAdmin, async (req, res, next) => {
+    /* #swagger.tags = ['Admin']
+       #swagger.description = "Delete a brand by ID."
+       #swagger.parameters['brandId'] = {
+           "name": "brandId",
+           "in": "path",
+           "required": true,
+           "type": "integer"
+       } */
+    try {
+        const brandId = req.params.brandId;
+        const token = req.query.token;
+
+        if (!token) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is required for accessing the dashboard.'
+            });
+        }
+
+        const options = {
+            hostname: 'localhost',
+            port: 3000,
+            path: `/brands/${brandId}`,
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        };
+
+        const request = http.request(options, (response) => {
+            let data = '';
+
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            response.on('end', () => {
+                const responseData = JSON.parse(data);
+
+                if (response.statusCode === 200) {
+                    res.json(responseData);
+                } else {
+                    res.status(response.statusCode).json(responseData);
+                }
+            });
+        });
+
+        request.on('error', (error) => {
+            next(error);
+        });
+
+        request.end();
+    } catch (error) {
+        next(error);
+    }
+});
 
 // Categories route
 router.get('/categories', authenticateJWT, isAdmin, async (req, res, next) => {
@@ -605,5 +728,7 @@ router.put('/orders/:orderId', authenticateJWT, isAdmin, async (req, res, next) 
         next(error);
     }
 });
+
+
 
 module.exports = router;

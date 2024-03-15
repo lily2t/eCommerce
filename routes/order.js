@@ -20,7 +20,13 @@ router.get('/', authenticateJWT, isAdmin, async (req, res) => {
 
     try {
         const orders = await orderService.getAllOrders(userId);
-        res.json({ status: 'success', statuscode: 200, data: { result: 'Orders found', orders } });
+        res.json({
+            status: 'success',
+            statuscode: 200, data: {
+                result: 'Orders found',
+                orders
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: 'error', statuscode: 500, data: { result: error.message } });
