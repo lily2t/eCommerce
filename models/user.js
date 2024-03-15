@@ -46,6 +46,7 @@ module.exports = (sequelize, Sequelize) => {
         User.belongsTo(models.Role);
         User.hasMany(models.Cart);
         User.hasMany(models.Order);
+        User.belongsTo(models.Membership); 
     };
 
     return User;

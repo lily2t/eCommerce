@@ -526,7 +526,7 @@ router.get('/orders', authenticateJWT, isAdmin, async (req, res, next) => {
             response.on('end', () => {
                 const responseData = JSON.parse(data);
 
-                if (responseData.status === 'success') {
+                if (responseData.statuscode === 200) {
                     const orders = responseData.data.orders;
                     res.render('admin/orders', { orders });
                 } else {

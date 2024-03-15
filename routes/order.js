@@ -7,7 +7,7 @@ const jsonParser = express.json();
 
 const orderService = new OrderService(db);
 
-router.get('/', authenticateJWT, isRegistered, async (req, res) => {
+router.get('/', authenticateJWT, isAdmin, async (req, res) => {
     /* #swagger.tags = ['Orders']
        #swagger.description = "Get all orders."
        #swagger.parameters['userId'] = {
@@ -102,13 +102,28 @@ router.delete('/:orderId', authenticateJWT, isAdmin, async (req, res) => {
     try {
         const deletedOrder = await orderService.deleteOrder(orderId);
         if (deletedOrder) {
-            res.json({ status: 'success', statuscode: 200, data: { result: 'Order deleted successfully', order: deletedOrder } });
+            res.json({
+                status: 'success',
+                statuscode: 200, data: {
+                    result: 'Order deleted successfully', order: deletedOrder
+                }
+            });
         } else {
-            res.status(404).json({ status: 'error', statuscode: 404, data: { result: 'Order not found' } });
+            res.status(404).json({
+                status: 'error',
+                statuscode: 404, data: {
+                    result: 'Order not found'
+                }
+            });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ status: 'error', statuscode: 500, data: { result: error.message } });
+        res.status(500).json({
+            status: 'error',
+            statuscode: 500, data: {
+                result: error.message
+            }
+        });
     }
 });
 

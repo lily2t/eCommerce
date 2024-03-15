@@ -9,15 +9,7 @@ module.exports = (sequelize, Sequelize) => {
             unitPrice: {
                 type: Sequelize.DataTypes.FLOAT,
                 allowNull: false,
-            },
-            createdAt: {
-                type: Sequelize.DataTypes.DATE,
-                allowNull: false,
-            },
-            updatedAt: {
-                type: Sequelize.DataTypes.DATE,
-                allowNull: false,
-            },
+            }
         },
         {
             timestamps: true,

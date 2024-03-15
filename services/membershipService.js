@@ -5,7 +5,13 @@ class MembershipService {
     }
 
     async createMembership(name, discount_percentage, min_items, max_items) {
-        return this.Membership.create({ name, discount_percentage, min_items, max_items });
+        return this.Membership.create({
+            name, discount_percentage, min_items, max_items
+        });
+    }
+
+    async getDefaultMembership() {
+        return this.Membership.findByPk(1); 
     }
 
     async getAllMemberships() {
@@ -20,6 +26,35 @@ class MembershipService {
         await membership.update(updatedFields);
         return membership;
     }
+
+    // Inside MembershipService.js
+
+    async updateMembershipStatus(userId, purchasedItemsCount) {
+        let membershipStatus = '';
+
+        if (purchasedItemsCount >= 30) {
+            membershipStatus = 'Gold';
+        } else if (purchasedItemsCount >= 15) {
+            membershipStatus = 'Silver';
+        } else {
+            membershipStatus = 'Bronze';
+        }
+
+        const user = await this.User.findByPk(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const membership = await user.getMembership();
+        if (!membership) {
+            throw new Error("Membership not found");
+        }
+
+        await membership.update({ name: membershipStatus });
+
+        return membership;
+    }
+
 
     async deleteMembership(membershipId) {
         const membership = await this.Membership.findByPk(membershipId);

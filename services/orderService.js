@@ -1,7 +1,10 @@
+const MembershipService = require('./membershipService.js');
+
 class OrderService {
     constructor(db) {
         this.Order = db.Order;
         this.OrderItem = db.OrderItem;
+        this.MembershipService = new MembershipService(db);
     }
 
     async getAllOrders(userId) {
@@ -29,6 +32,9 @@ class OrderService {
             orderNumber: orderNumber,
             membershipStatus: membershipStatus
         });
+
+        const totalItemsPurchased = orderItems.reduce((acc, item) => acc + item.quantity, 0);
+        await this.MembershipService.updateMembershipStatus(userId, totalItemsPurchased);
 
         for (const orderItem of orderItems) {
             await this.OrderItem.create({

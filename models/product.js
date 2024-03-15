@@ -46,7 +46,7 @@ module.exports = (sequelize, Sequelize) => {
         Product.belongsTo(models.Brand);
         Product.belongsTo(models.Category);
         Product.hasMany(models.Cart);
-        Product.hasMany(models.Order);
+        Product.hasMany(models.OrderItem);
     };
 
     return Product;

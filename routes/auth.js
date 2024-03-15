@@ -230,10 +230,20 @@ router.post('/register', jsonParser, async (req, res) => {
       telephoneNumber,
       roleId);
 
-    res.status(201).json({ status: 'success', statuscode: 200, data: { result: 'User created successfully' } });
+    res.status(201).json({
+      status: 'success',
+      statuscode: 200, data: {
+        result: 'User created successfully'
+      }
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: 'error', statuscode: 500, data: { result: 'Internal Server Error' } });
+    res.status(500).json({
+      status: 'error',
+      statuscode: 500, data: {
+        result: 'Internal Server Error'
+      }
+    });
   }
 });
 

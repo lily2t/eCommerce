@@ -77,13 +77,18 @@ router.put('/:membershipId', authenticateJWT, isAdmin, jsonParser, async (req, r
         const membership = await membershipService.updateMembership(membershipId, updatedFields);
         res.json({
             status: 'success',
-            statuscode: 200, data: { result: 'Membership updated successfully', membership }
+            statuscode: 200, data: {
+                result: 'Membership updated successfully',
+                membership
+            }
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({
             status: 'error',
-            statuscode: 500, data: { result: 'Internal Server Error' }
+            statuscode: 500, data: {
+                result: 'Internal Server Error'
+            }
         });
     }
 });

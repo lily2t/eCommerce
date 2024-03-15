@@ -25,6 +25,8 @@ module.exports = (sequelize, Sequelize) => {
     );
 
     Membership.associate = function (models) {
+        Membership.hasMany(models.User);
+        Membership.hasMany(models.Order);
     };
 
     return Membership;
